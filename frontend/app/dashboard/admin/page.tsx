@@ -50,9 +50,10 @@ export default function AdminDashboard() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        setUsers(data);
+        if (res.ok) setUsers(data);
+        else showToast('Failed to load users', 'error');
       } catch {
-        showToast('Failed to load users', 'error');
+        showToast('Unable to connect to server', 'error');
       } finally {
         setLoading(false);
       }
