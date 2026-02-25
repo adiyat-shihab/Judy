@@ -307,9 +307,14 @@ export default function SolverProjectPage({ params }: { params: Promise<{ id: st
           style={{ width: '34px', height: '34px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}
         >←</button>
         <div>
-          <div style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>Project Workspace</div>
+          <div style={{ fontSize: '0.72rem', color: project.status === 'Completed' ? '#10b981' : '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>{project.status === 'Completed' ? '🎉 Project Archived' : 'Project Workspace'}</div>
           <h1 style={{ fontWeight: '700', fontSize: '1.4rem' }}>{project.title}</h1>
         </div>
+        {project.status === 'Completed' && (
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            style={{ marginLeft: 'auto', padding: '7px 16px', borderRadius: '999px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399', fontSize: '0.8rem', fontWeight: '700' }}
+          >✓ Delivered</motion.div>
+        )}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px', alignItems: 'start' }}>
@@ -321,10 +326,12 @@ export default function SolverProjectPage({ params }: { params: Promise<{ id: st
           <div className="glass-card" style={{ padding: '20px 24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showTaskForm ? '20px' : '0' }}>
               <h2 style={{ fontWeight: '700', fontSize: '1rem' }}>Tasks ({tasks.length})</h2>
-              <motion.button whileTap={{ scale: 0.96 }}
-                onClick={() => { setShowTaskForm(p => !p); setFormError(''); }}
-                style={{ padding: '8px 16px', borderRadius: '8px', background: showTaskForm ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white', border: showTaskForm ? '1px solid var(--border)' : 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.8rem' }}
-              >{showTaskForm ? '✕ Cancel' : '+ New Task'}</motion.button>
+              {project.status !== 'Completed' && (
+                <motion.button whileTap={{ scale: 0.96 }}
+                  onClick={() => { setShowTaskForm(p => !p); setFormError(''); }}
+                  style={{ padding: '8px 16px', borderRadius: '8px', background: showTaskForm ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white', border: showTaskForm ? '1px solid var(--border)' : 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.8rem' }}
+                >{showTaskForm ? '✕ Cancel' : '+ New Task'}</motion.button>
+              )}
             </div>
 
             {/* Inline task form */}
@@ -394,14 +401,14 @@ export default function SolverProjectPage({ params }: { params: Promise<{ id: st
                         </div>
                       </div>
 
-                      {/* Submit ZIP button — only for In-progress tasks */}
-                      {task.status === 'In-progress' && (
+                      {/* Action buttons — hidden when project is Completed (archived) */}
+                      {task.status === 'In-progress' && project.status !== 'Completed' && (
                         <motion.button whileTap={{ scale: 0.96 }}
                           onClick={() => setSubmitTask(task)}
                           style={{ padding: '8px 14px', borderRadius: '8px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399', cursor: 'pointer', fontWeight: '600', fontSize: '0.78rem', flexShrink: 0, whiteSpace: 'nowrap' }}
                         >📤 Submit ZIP</motion.button>
                       )}
-                      {task.status === 'Rejected' && (
+                      {task.status === 'Rejected' && project.status !== 'Completed' && (
                         <motion.button whileTap={{ scale: 0.96 }}
                           onClick={() => setSubmitTask(task)}
                           style={{ padding: '8px 14px', borderRadius: '8px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', cursor: 'pointer', fontWeight: '600', fontSize: '0.78rem', flexShrink: 0, whiteSpace: 'nowrap' }}
