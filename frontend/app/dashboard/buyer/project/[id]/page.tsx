@@ -7,10 +7,27 @@ import { useAuth } from '../../../../context/AuthContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-interface Request {
+interface SolverRequest {
   _id: string;
   solverId: { _id: string; name: string; email: string };
   status: 'Pending' | 'Accepted' | 'Rejected';
+  createdAt: string;
+}
+
+interface Task {
+  _id: string;
+  title: string;
+  description: string;
+  timeline: string;
+  status: 'In-progress' | 'Submitted' | 'Completed' | 'Rejected';
+  createdAt: string;
+}
+
+interface Submission {
+  _id: string;
+  taskId: string;
+  fileUrl: string;
+  fileName: string;
   createdAt: string;
 }
 
@@ -25,12 +42,13 @@ interface Project {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  Unassigned: '#f59e0b',
-  Assigned: '#3b82f6',
-  Completed: '#10b981',
-  Pending: '#f59e0b',
-  Accepted: '#10b981',
-  Rejected: '#ef4444',
+  Unassigned: '#f59e0b', Assigned: '#3b82f6', Completed: '#10b981',
+  Pending: '#f59e0b', Accepted: '#10b981', Rejected: '#ef4444',
+  'In-progress': '#f59e0b', Submitted: '#3b82f6',
+};
+
+const TASK_STATUS_ICON: Record<string, string> = {
+  'In-progress': '⚡', 'Submitted': '📤', 'Completed': '✅', 'Rejected': '❌',
 };
 
 export default function BuyerProjectDetail() {
@@ -40,9 +58,12 @@ export default function BuyerProjectDetail() {
   const projectId = params.id as string;
 
   const [project, setProject] = useState<Project | null>(null);
-  const [requests, setRequests] = useState<Request[]>([]);
+  const [requests, setRequests] = useState<SolverRequest[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [submissions, setSubmissions] = useState<Record<string, Submission>>({});
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<string | null>(null);
+  const [reviewing, setReviewing] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -106,6 +127,7 @@ export default function BuyerProjectDetail() {
   if (!project) return null;
 
   const pendingRequests = requests.filter(r => r.status === 'Pending');
+  const submittedTasks = tasks.filter(t => t.status === 'Submitted' || t.status === 'Completed' || t.status === 'Rejected');
 
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto', padding: '36px 24px' }}>
