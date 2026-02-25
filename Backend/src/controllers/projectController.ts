@@ -126,3 +126,60 @@ export const assignSolver = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Update a project's title and/or description
+// @route   PATCH /api/projects/:id
+// @access  Private (Buyer who owns the project — only while Unassigned)
+export const updateProject = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { title, description } = req.body;
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      res.status(404).json({ message: 'Project not found' });
+      return;
+    }
+    if (project.buyerId.toString() !== (req as any).user._id.toString()) {
+      res.status(403).json({ message: 'Not authorized to edit this project' });
+      return;
+    }
+    if (project.status !== ProjectStatus.UNASSIGNED) {
+      res.status(400).json({ message: 'Cannot edit a project that has already been assigned' });
+      return;
+    }
+    if (title) project.title = title;
+    if (description) project.description = description;
+    await project.save();
+    const updated = await Project.findById(project._id)
+      .populate('buyerId', 'name email')
+      .populate('solverId', 'name email');
+    res.status(200).json(updated);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete a project
+// @route   DELETE /api/projects/:id
+// @access  Private (Buyer who owns the project — only while Unassigned)
+export const deleteProject = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      res.status(404).json({ message: 'Project not found' });
+      return;
+    }
+    if (project.buyerId.toString() !== (req as any).user._id.toString()) {
+      res.status(403).json({ message: 'Not authorized to delete this project' });
+      return;
+    }
+    if (project.status !== ProjectStatus.UNASSIGNED) {
+      res.status(400).json({ message: 'Cannot delete a project that has already been assigned to a solver' });
+      return;
+    }
+    await SolverRequest.deleteMany({ projectId: project._id });
+    await project.deleteOne();
+    res.status(200).json({ message: 'Project deleted successfully' });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
