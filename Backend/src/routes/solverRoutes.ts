@@ -5,6 +5,7 @@ import {
   createTask,
   getTasks,
   submitTask,
+  getTaskSubmission,
   reviewSubmission,
 } from '../controllers/solverController';
 import { protect, authorize } from '../middlewares/authMiddleware';
@@ -27,8 +28,10 @@ router.post('/projects/:id/requests', authorize(Role.PROBLEM_SOLVER), requestToW
 router.post('/projects/:id/tasks', authorize(Role.PROBLEM_SOLVER), createTask);
 router.get('/projects/:id/tasks', getTasks);
 
-// @route POST  /api/tasks/:id/submit → Solver uploads a ZIP file for a task
-// @route PATCH /api/tasks/:id/review → Buyer accepts or rejects the submission
+// @route GET   /api/tasks/:id/submission → Get latest submission for a task (buyer/solver)
+// @route POST  /api/tasks/:id/submit     → Solver uploads a ZIP file for a task
+// @route PATCH /api/tasks/:id/review     → Buyer accepts or rejects the submission
+router.get('/tasks/:id/submission', getTaskSubmission);
 router.post('/tasks/:id/submit', authorize(Role.PROBLEM_SOLVER), upload.single('file'), submitTask);
 router.patch('/tasks/:id/review', authorize(Role.BUYER), reviewSubmission);
 

@@ -195,3 +195,17 @@ export const reviewSubmission = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get the latest submission for a task
+// @route   GET /api/tasks/:id/submission
+// @access  Private (Buyer or Solver)
+export const getTaskSubmission = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const submission = await Submission.findOne({ taskId: req.params.id }).sort({ createdAt: -1 });
+    if (!submission) { res.status(404).json({ message: 'No submission found' }); return; }
+    res.status(200).json(submission);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
