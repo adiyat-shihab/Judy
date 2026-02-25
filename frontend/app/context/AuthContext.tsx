@@ -39,6 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(authToken);
     localStorage.setItem('judy_token', authToken);
     localStorage.setItem('judy_user', JSON.stringify(userData));
+    // Set cookie for Next.js middleware (Edge runtime can't read localStorage)
+    document.cookie = `judy_role=${userData.role}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+    document.cookie = `judy_token=${authToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
   };
 
   const logout = () => {
@@ -46,6 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
     localStorage.removeItem('judy_token');
     localStorage.removeItem('judy_user');
+    document.cookie = 'judy_role=; path=/; max-age=0';
+    document.cookie = 'judy_token=; path=/; max-age=0';
   };
 
   return (
