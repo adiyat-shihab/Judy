@@ -10,15 +10,33 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  role: string;
+  role: 'Admin' | 'Buyer' | 'Problem Solver';
+  createdAt?: string;
 }
 
+const ROLE_COLOR: Record<string, string> = {
+  Admin: '#ef4444',
+  Buyer: '#3b82f6',
+  'Problem Solver': '#10b981',
+};
+
+const ROLE_ICON: Record<string, string> = {
+  Admin: '🛡️',
+  Buyer: '🛒',
+  'Problem Solver': '🔧',
+};
+
+type Filter = 'All' | 'Problem Solver' | 'Buyer' | 'Admin';
+
 export default function AdminDashboard() {
-  const { token } = useAuth();
+  const { token, user: adminUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [promoting, setPromoting] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>('All');
+  const [search, setSearch] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [confirmUser, setConfirmUser] = useState<User | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
