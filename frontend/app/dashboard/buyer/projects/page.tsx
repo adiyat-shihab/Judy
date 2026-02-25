@@ -430,16 +430,20 @@ export default function MyProjectsPage() {
       ) : (
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <div className="glass-card" style={{ overflow: 'hidden' }}>
+            <div className="glass-card">
               {filtered.map((project, i) => (
                 <motion.div key={project._id}
                   initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 120px 160px 120px 36px', padding: '16px 16px', borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center' }}
+                  style={{
+                    display: 'grid', gridTemplateColumns: '1fr 120px 160px 120px 36px',
+                    padding: '16px 16px', alignItems: 'center', cursor: 'pointer',
+                    borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
+                    borderRadius: i === 0 ? '12px 12px 0 0' : i === filtered.length - 1 ? '0 0 12px 12px' : '0',
+                  }}
                   onClick={() => router.push(`/dashboard/buyer/project/${project._id}`)}
                   whileHover={{ backgroundColor: 'rgba(255,255,255,0.025)' }}
-                  style2={{ cursor: 'pointer' }}
                 >
-                  <div style={{ paddingRight: '20px', cursor: 'pointer' }}>
+                  <div style={{ paddingRight: '20px' }}>
                     <div style={{ fontWeight: '600', fontSize: '0.9rem', marginBottom: '3px' }}>{project.title}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '420px' }}>{project.description}</div>
                   </div>
