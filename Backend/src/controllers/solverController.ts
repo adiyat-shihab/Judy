@@ -10,36 +10,31 @@ import Submission from '../models/Submission';
 export const requestToWork = async (req: Request, res: Response): Promise<void> => {
   try {
     const project = await Project.findById(req.params.id);
-
-    if (!project) {
-      res.status(404).json({ message: 'Project not found' });
-      return;
-    }
-
-    if (project.status !== ProjectStatus.UNASSIGNED) {
-      res.status(400).json({ message: 'This project has already been assigned' });
-      return;
-    }
-
+    if (!project) { res.status(404).json({ message: 'Project not found' }); return; }
+    if (project.status !== ProjectStatus.UNASSIGNED) { res.status(400).json({ message: 'This project has already been assigned' }); return; }
     const solverId = (req as any).user._id;
-
-    // Check if solver already requested this project
     const existing = await SolverRequest.findOne({ projectId: project._id, solverId });
-    if (existing) {
-      res.status(400).json({ message: 'You have already requested to work on this project' });
-      return;
-    }
-
-    const request = await SolverRequest.create({
-      projectId: project._id,
-      solverId,
-    });
-
+    if (existing) { res.status(400).json({ message: 'You have already requested to work on this project' }); return; }
+    const request = await SolverRequest.create({ projectId: project._id, solverId });
     res.status(201).json(request);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
+  } catch (error: any) { res.status(500).json({ message: error.message }); }
 };
+
+// @desc    Get the project currently assigned to this solver
+// @route   GET /api/solver/my-project
+// @access  Private (Problem Solver only)
+export const getMyProject = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const solverId = (req as any).user._id;
+    const project = await Project.findOne({ solverId, status: ProjectStatus.ASSIGNED })
+      .populate('buyerId', 'name email')
+      .populate('solverId', 'name email');
+    if (!project) { res.status(404).json({ message: 'No active assignment found' }); return; }
+    res.status(200).json(project);
+  } catch (error: any) { res.status(500).json({ message: error.message }); }
+};
+
+
 
 // @desc    Create a task for an assigned project
 // @route   POST /api/projects/:id/tasks
