@@ -193,3 +193,56 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Mark a project as Completed (Buyer confirms delivery)
+// @route   PATCH /api/projects/:id/complete
+// @access  Private (Buyer who owns the project)
+export const completeProject = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      res.status(404).json({ message: 'Project not found' });
+      return;
+    }
+
+    if (project.buyerId.toString() !== (req as any).user._id.toString()) {
+      res.status(403).json({ message: 'Not authorized to complete this project' });
+      return;
+    }
+
+    if (project.status !== ProjectStatus.ASSIGNED) {
+      res.status(400).json({ message: 'Project must be Assigned before it can be marked Completed' });
+      return;
+    }
+
+    // Guard: every task must be Completed before the project can be closed
+    const Task = (await import('../models/Task')).default;
+    const tasks = await Task.find({ projectId: project._id });
+
+    if (tasks.length === 0) {
+      res.status(400).json({ message: 'There are no tasks to complete. The solver must create and submit tasks first.' });
+      return;
+    }
+
+    const incomplete = tasks.filter((t: any) => t.status !== 'Completed');
+    if (incomplete.length > 0) {
+      res.status(400).json({
+        message: `${incomplete.length} task(s) are not yet completed. Accept all submissions before closing the project.`,
+      });
+      return;
+    }
+
+    project.status = ProjectStatus.COMPLETED;
+    await project.save();
+
+    const populated = await Project.findById(project._id)
+      .populate('buyerId', 'name email')
+      .populate('solverId', 'name email');
+
+    res.status(200).json({ message: 'Project marked as Completed successfully', project: populated });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

@@ -7,6 +7,7 @@ import {
   assignSolver,
   updateProject,
   deleteProject,
+  completeProject,
 } from '../controllers/projectController';
 import { protect, authorize } from '../middlewares/authMiddleware';
 import { Role } from '../models/User';
@@ -28,9 +29,11 @@ router.get('/:id', getProjectById);
 router.patch('/:id', authorize(Role.BUYER), updateProject);
 router.delete('/:id', authorize(Role.BUYER), deleteProject);
 
-// @route GET   /api/projects/:id/requests → Buyer (owner) views requests
-// @route PATCH /api/projects/:id/assign   → Buyer (owner) assigns a solver
+// @route GET   /api/projects/:id/requests  → Buyer (owner) views requests
+// @route PATCH /api/projects/:id/assign    → Buyer (owner) assigns a solver
+// @route PATCH /api/projects/:id/complete  → Buyer confirms project delivery
 router.get('/:id/requests', authorize(Role.BUYER), getProjectRequests);
 router.patch('/:id/assign', authorize(Role.BUYER), assignSolver);
+router.patch('/:id/complete', authorize(Role.BUYER), completeProject);
 
 export default router;
