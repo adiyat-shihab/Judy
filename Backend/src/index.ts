@@ -7,6 +7,8 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import projectRoutes from './routes/projectRoutes';
 import solverRoutes from './routes/solverRoutes';
+import applicationRoutes from './routes/applicationRoutes';
+
 
 // Load env vars
 dotenv.config();
@@ -28,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api', solverRoutes);
+app.use('/api/applications', applicationRoutes);
 
 // Health check
 app.get('/', (_req, res) => {
