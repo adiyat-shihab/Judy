@@ -24,19 +24,29 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// @desc    Get all projects
+// @desc    Get projects (role-scoped)
+//          - Buyers: their own projects only
+//          - Solvers / Admins: all Unassigned projects (to browse & request)
 // @route   GET /api/projects
 // @access  Private (All roles)
 export const getProjects = async (req: Request, res: Response): Promise<void> => {
   try {
-    const projects = await Project.find()
+    const user = (req as any).user;
+    const query = user.role === 'Buyer'
+      ? { buyerId: user._id }                        // buyer sees only their projects
+      : { status: ProjectStatus.UNASSIGNED };        // solvers/admins browse open projects
+
+    const projects = await Project.find(query)
       .populate('buyerId', 'name email')
-      .populate('solverId', 'name email');
+      .populate('solverId', 'name email')
+      .sort({ createdAt: -1 });
+
     res.status(200).json(projects);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // @desc    Get a single project by ID
 // @route   GET /api/projects/:id
