@@ -12,7 +12,7 @@ const NAV_LINKS: Record<string, { label: string; href: string }[]> = {
   ],
   Buyer: [
     { label: 'Dashboard', href: '/dashboard/buyer' },
-    { label: 'My Projects', href: '/dashboard/buyer' },
+    { label: 'My Projects', href: '/dashboard/buyer/projects' },
     { label: 'New Project', href: '/dashboard/buyer/new' },
   ],
   'Problem Solver': [
