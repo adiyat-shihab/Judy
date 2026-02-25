@@ -71,6 +71,31 @@ export default function BuyerProjectDetail() {
     setTimeout(() => setToast(null), 3500);
   };
 
+  const loadTasks = async (pid: string) => {
+    const tRes = await fetch(`${API}/api/projects/${pid}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
+    if (tRes.ok) {
+      const taskData: Task[] = await tRes.json();
+      setTasks(taskData);
+
+      // Load submissions for each submitted/completed/rejected task
+      const subMap: Record<string, Submission> = {};
+      await Promise.all(
+        taskData
+          .filter(t => t.status !== 'In-progress')
+          .map(async t => {
+            try {
+              const sRes = await fetch(`${API}/api/tasks/${t._id}/submission`, { headers: { Authorization: `Bearer ${token}` } });
+              if (sRes.ok) {
+                const sub = await sRes.json();
+                subMap[t._id] = sub;
+              }
+            } catch { /* no submission yet */ }
+          })
+      );
+      setSubmissions(subMap);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -81,6 +106,11 @@ export default function BuyerProjectDetail() {
         const [projData, reqData] = await Promise.all([projRes.json(), reqRes.json()]);
         if (projRes.ok) setProject(projData);
         if (reqRes.ok) setRequests(reqData);
+
+        // Load tasks if project is assigned or completed
+        if (projRes.ok && projData.status !== 'Unassigned') {
+          await loadTasks(projectId);
+        }
       } catch {
         showToast('Failed to load project', 'error');
       } finally {
