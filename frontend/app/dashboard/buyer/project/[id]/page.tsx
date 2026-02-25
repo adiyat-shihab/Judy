@@ -130,13 +130,11 @@ export default function BuyerProjectDetail() {
       });
       const data = await res.json();
       if (!res.ok) { showToast(data.message, 'error'); return; }
-
-      // Optimistically update UI
       setProject(prev => prev ? { ...prev, status: 'Assigned', solverId: data.project?.solverId } : prev);
       setRequests(prev => prev.map(r =>
         r._id === requestId ? { ...r, status: 'Accepted' } : { ...r, status: 'Rejected' }
       ));
-      showToast('Solver assigned! Project is now In Progress.', 'success');
+      showToast('Solver assigned! Project is now in progress.', 'success');
     } catch {
       showToast('Failed to assign solver', 'error');
     } finally {
@@ -197,13 +195,7 @@ export default function BuyerProjectDetail() {
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed', top: '72px', right: '24px', zIndex: 999,
-              padding: '12px 20px', borderRadius: '10px',
-              background: toast.type === 'success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
-              border: `1px solid ${toast.type === 'success' ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`,
-              color: toast.type === 'success' ? '#34d399' : '#f87171', fontWeight: '500', fontSize: '0.875rem',
-            }}
+            style={{ position: 'fixed', top: '72px', right: '24px', zIndex: 999, padding: '12px 20px', borderRadius: '10px', background: toast.type === 'success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${toast.type === 'success' ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: toast.type === 'success' ? '#34d399' : '#f87171', fontWeight: '500', fontSize: '0.875rem' }}
           >{toast.type === 'success' ? '✓ ' : '⚠ '}{toast.message}</motion.div>
         )}
       </AnimatePresence>
@@ -211,28 +203,22 @@ export default function BuyerProjectDetail() {
       {/* Back */}
       <button onClick={() => router.push('/dashboard/buyer')}
         style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem', marginBottom: '20px', padding: 0, display: 'flex', alignItems: 'center', gap: '6px' }}
-      >
-        ← Back to Dashboard
-      </button>
+      >← Back to Dashboard</button>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
 
-        {/* Left */}
+        {/* ── LEFT COLUMN ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
           {/* Project info */}
           <motion.div className="glass-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '28px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginBottom: '16px' }}>
               <h1 style={{ fontSize: '1.4rem', fontWeight: '700', lineHeight: 1.3, flex: 1 }}>{project.title}</h1>
-              <span style={{
-                padding: '5px 14px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '600', flexShrink: 0,
-                background: `${STATUS_COLOR[project.status]}15`, color: STATUS_COLOR[project.status],
-                border: `1px solid ${STATUS_COLOR[project.status]}30`,
-              }}>{project.status}</span>
+              <span style={{ padding: '5px 14px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '600', flexShrink: 0, background: `${STATUS_COLOR[project.status]}15`, color: STATUS_COLOR[project.status], border: `1px solid ${STATUS_COLOR[project.status]}30` }}>
+                {project.status}
+              </span>
             </div>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>
-              {project.description}
-            </p>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{project.description}</p>
             {project.solverId && (
               <div style={{ marginTop: '20px', padding: '14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
                 <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: '600', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Assigned Solver</div>
@@ -356,28 +342,17 @@ export default function BuyerProjectDetail() {
               <div style={{ padding: '40px', textAlign: 'center' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '12px' }}>📭</div>
                 <div style={{ fontWeight: '500', marginBottom: '6px' }}>No requests yet</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-                  Solvers will start requesting once they find your project.
-                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>Solvers will start requesting once they find your project.</div>
               </div>
             ) : (
               <div style={{ padding: '8px 0' }}>
                 {requests.map((req, i) => (
                   <motion.div key={req._id}
                     initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
-                      padding: '14px 24px',
-                      borderBottom: i < requests.length - 1 ? '1px solid var(--border)' : 'none',
-                    }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '14px 24px', borderBottom: i < requests.length - 1 ? '1px solid var(--border)' : 'none' }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{
-                        width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
-                        background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.3)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontWeight: '700', fontSize: '0.875rem', color: '#a855f7',
-                      }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0, background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.875rem', color: '#a855f7' }}>
                         {req.solverId.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -386,24 +361,14 @@ export default function BuyerProjectDetail() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{
-                        padding: '3px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '500',
-                        background: `${STATUS_COLOR[req.status]}15`, color: STATUS_COLOR[req.status],
-                        border: `1px solid ${STATUS_COLOR[req.status]}30`,
-                      }}>{req.status}</span>
+                      <span style={{ padding: '3px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '500', background: `${STATUS_COLOR[req.status]}15`, color: STATUS_COLOR[req.status], border: `1px solid ${STATUS_COLOR[req.status]}30` }}>
+                        {req.status}
+                      </span>
                       {req.status === 'Pending' && project.status === 'Unassigned' && (
                         <motion.button whileTap={{ scale: 0.96 }}
-                          onClick={() => assignSolver(req._id)}
-                          disabled={assigning === req._id}
-                          style={{
-                            padding: '7px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600',
-                            background: 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white',
-                            border: 'none', cursor: assigning === req._id ? 'not-allowed' : 'pointer',
-                            opacity: assigning === req._id ? 0.6 : 1,
-                          }}
-                        >
-                          {assigning === req._id ? '...' : 'Assign →'}
-                        </motion.button>
+                          onClick={() => assignSolver(req._id)} disabled={assigning === req._id}
+                          style={{ padding: '7px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', background: 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white', border: 'none', cursor: assigning === req._id ? 'not-allowed' : 'pointer', opacity: assigning === req._id ? 0.6 : 1 }}
+                        >{assigning === req._id ? '...' : 'Assign →'}</motion.button>
                       )}
                     </div>
                   </motion.div>
@@ -413,7 +378,7 @@ export default function BuyerProjectDetail() {
           </motion.div>
         </div>
 
-        {/* Right — metadata */}
+        {/* ── RIGHT COLUMN ── */}
         <motion.div initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
           style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'sticky', top: '24px' }}
         >
@@ -428,14 +393,11 @@ export default function BuyerProjectDetail() {
             ].map((step, i, arr) => (
               <div key={step.label} style={{ display: 'flex', gap: '12px', paddingBottom: i < arr.length - 1 ? '16px' : 0 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{
-                    width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-                    background: step.done ? '#10b981' : step.active ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.06)',
-                    border: step.active ? '2px solid #3b82f6' : 'none',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem',
-                  }}>
-                    {step.done && '✓'}
-                  </div>
+                  <motion.div
+                    animate={{ background: step.done ? '#10b981' : step.active ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.06)' }}
+                    transition={{ duration: 0.4 }}
+                    style={{ width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0, border: step.active ? '2px solid #3b82f6' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', color: 'white' }}
+                  >{step.done && '✓'}</motion.div>
                   {i < arr.length - 1 && (
                     <div style={{ width: '1px', flex: 1, background: step.done ? '#10b981' : 'var(--border)', marginTop: '4px', minHeight: '16px' }} />
                   )}
@@ -449,21 +411,53 @@ export default function BuyerProjectDetail() {
             ))}
           </div>
 
+          {/* Task progress */}
+          {tasks.length > 0 && (
+            <div className="glass-card" style={{ padding: '20px' }}>
+              <h3 style={{ fontWeight: '600', fontSize: '0.88rem', marginBottom: '14px', color: 'var(--text-secondary)' }}>Task Progress</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Completed</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#10b981' }}>
+                  {tasks.filter(t => t.status === 'Completed').length} / {tasks.length}
+                </span>
+              </div>
+              <div style={{ height: '6px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden', marginBottom: '14px' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(tasks.filter(t => t.status === 'Completed').length / tasks.length) * 100}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  style={{ height: '100%', background: 'linear-gradient(90deg,#10b981,#059669)', borderRadius: '4px' }}
+                />
+              </div>
+              {[
+                { label: 'In Progress', count: tasks.filter(t => t.status === 'In-progress').length, color: '#f59e0b' },
+                { label: 'Submitted', count: tasks.filter(t => t.status === 'Submitted').length, color: '#3b82f6' },
+                { label: 'Completed', count: tasks.filter(t => t.status === 'Completed').length, color: '#10b981' },
+                { label: 'Rejected', count: tasks.filter(t => t.status === 'Rejected').length, color: '#ef4444' },
+              ].map(item => (
+                <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.label}</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '700', color: item.color }}>{item.count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Details */}
           <div className="glass-card" style={{ padding: '20px' }}>
             <h3 style={{ fontWeight: '600', fontSize: '0.88rem', marginBottom: '14px', color: 'var(--text-secondary)' }}>Details</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Posted</span>
-                <span>{new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Total Requests</span>
-                <span>{requests.length}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Status</span>
-                <span style={{ color: STATUS_COLOR[project.status], fontWeight: '600' }}>{project.status}</span>
-              </div>
+              {[
+                { label: 'Posted', value: new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) },
+                { label: 'Total Requests', value: String(requests.length) },
+                { label: 'Total Tasks', value: String(tasks.length) },
+                { label: 'Status', value: project.status, colored: true },
+              ].map(item => (
+                <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>{item.label}</span>
+                  <span style={item.colored ? { color: STATUS_COLOR[item.value], fontWeight: '600' } : {}}>{item.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </motion.div>
