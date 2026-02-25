@@ -77,11 +77,9 @@ function EditModal({
         onClick={e => e.stopPropagation()}
       >
         <h2 style={{ fontWeight: '700', fontSize: '1.1rem', marginBottom: '20px' }}>✏️ Edit Project</h2>
-        {/* Warning banner */}
         <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', marginBottom: '20px', fontSize: '0.8rem', color: '#fbbf24' }}>
           ⚠️ You can only edit projects that have not yet been assigned to a solver.
         </div>
-
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
             <label className="input-label">Project Title</label>
@@ -94,7 +92,6 @@ function EditModal({
           </div>
           {error && <div className="error-msg">⚠ {error}</div>}
         </div>
-
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'flex-end' }}>
           <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.875rem' }}>
             Cancel
@@ -158,16 +155,13 @@ function DeleteModal({
             <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>This action cannot be undone</p>
           </div>
         </div>
-
         <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', marginBottom: '20px' }}>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             Are you sure you want to permanently delete <strong style={{ color: 'var(--text-primary)' }}>&ldquo;{project.title}&rdquo;</strong>?
             All solver requests for this project will also be deleted.
           </p>
         </div>
-
         {error && <div className="error-msg" style={{ marginBottom: '14px' }}>⚠ {error}</div>}
-
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
           <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.875rem' }}>
             Cancel
@@ -456,7 +450,6 @@ export default function MyProjectsPage() {
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                     {new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  {/* Action button — stops propagation so clicking it doesn't navigate */}
                   <div onClick={e => e.stopPropagation()}>
                     <RowActions
                       project={project}
