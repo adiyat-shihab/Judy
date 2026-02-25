@@ -18,6 +18,7 @@ const NAV_LINKS: Record<string, { label: string; href: string }[]> = {
   'Problem Solver': [
     { label: 'Browse', href: '/dashboard/solver' },
     { label: 'My Work', href: '/dashboard/solver/work' },
+    { label: 'Apply for Buyer', href: '/dashboard/solver/apply' },
   ],
 };
 

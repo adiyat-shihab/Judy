@@ -123,6 +123,18 @@ export default function SolverDashboard() {
               </div>
             ))}
           </motion.div>
+
+          {/* Apply for Buyer Role CTA */}
+          <motion.div className="glass-card" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
+            style={{ padding: '20px', borderColor: 'rgba(124,58,237,0.3)', background: 'rgba(124,58,237,0.04)' }}
+          >
+            <div style={{ fontSize: '0.72rem', color: '#a855f7', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Role Upgrade</div>
+            <div style={{ fontWeight: '600', fontSize: '0.9rem', marginBottom: '6px' }}>Want to post projects?</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: 1.5, marginBottom: '14px' }}>Apply for Buyer access to create projects and hire solvers.</div>
+            <motion.button whileTap={{ scale: 0.97 }} onClick={() => router.push('/dashboard/solver/apply')}
+              style={{ width: '100%', padding: '9px', borderRadius: '8px', background: 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '0.8rem' }}
+            >Apply for Buyer Role →</motion.button>
+          </motion.div>
         </div>
 
         {/* ── RIGHT PANEL ── */}
