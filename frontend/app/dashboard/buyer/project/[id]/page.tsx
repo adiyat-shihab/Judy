@@ -144,6 +144,37 @@ export default function BuyerProjectDetail() {
     }
   };
 
+  const reviewTask = async (taskId: string, action: 'accept' | 'reject') => {
+    setReviewing(taskId);
+    try {
+      const res = await fetch(`${API}/api/tasks/${taskId}/review`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.message, 'error'); return; }
+
+      // Update task status in state
+      setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: data.task.status } : t));
+
+      if (action === 'accept') {
+        showToast('Task accepted and marked as Completed! ✓', 'success');
+        // Check if all tasks are completed → mark project complete
+        const updatedTasks = tasks.map(t => t._id === taskId ? { ...t, status: 'Completed' as const } : t);
+        if (updatedTasks.every(t => t.status === 'Completed')) {
+          setProject(prev => prev ? { ...prev, status: 'Completed' } : prev);
+        }
+      } else {
+        showToast('Task rejected — solver will be notified to resubmit.', 'error');
+      }
+    } catch {
+      showToast('Failed to review task', 'error');
+    } finally {
+      setReviewing(null);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
