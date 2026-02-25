@@ -8,7 +8,7 @@ const ROLE_ROUTES: Record<string, string[]> = {
   '/dashboard/solver': ['Problem Solver'],
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const token = request.cookies.get('judy_token')?.value;
