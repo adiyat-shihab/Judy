@@ -32,9 +32,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const pathname = usePathname();
 
+  // Redirect unauthenticated users
   useEffect(() => {
     if (!isLoading && !user) router.replace('/login');
   }, [user, isLoading, router]);
+
+  // Cross-role path enforcement — server-validated role is the source of truth
+  useEffect(() => {
+    if (isLoading || !user) return;
+    const role = user.role;
+    if (role === 'Admin' && !pathname.startsWith('/dashboard/admin')) {
+      router.replace('/dashboard/admin');
+    } else if (role === 'Buyer' && !pathname.startsWith('/dashboard/buyer')) {
+      router.replace('/dashboard/buyer');
+    } else if (role === 'Problem Solver' && !pathname.startsWith('/dashboard/solver')) {
+      router.replace('/dashboard/solver');
+    }
+  }, [user, isLoading, pathname, router]);
 
   if (isLoading || !user) {
     return (
