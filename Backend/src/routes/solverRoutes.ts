@@ -18,7 +18,7 @@ const router = express.Router();
 router.use(protect);
 
 // @route GET  /api/solver/my-project → Solver fetches their currently assigned project
-router.get('/my-project', authorize(Role.PROBLEM_SOLVER), getMyProject);
+router.get('/solver/my-project', authorize(Role.PROBLEM_SOLVER), getMyProject);
 
 // @route POST /api/projects/:id/requests → Solver requests to work on a project
 router.post('/projects/:id/requests', authorize(Role.PROBLEM_SOLVER), requestToWork);
