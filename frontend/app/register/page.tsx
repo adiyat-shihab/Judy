@@ -8,16 +8,12 @@ import { useAuth } from '../context/AuthContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-const ROLES = [
-  { value: 'Buyer', label: '🛒 Buyer', desc: 'Post projects & hire solvers' },
-  { value: 'Problem Solver', label: '🔧 Problem Solver', desc: 'Bid on projects & earn' },
-];
 
 export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuth();
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'Problem Solver' });
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -153,37 +149,14 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Role Selector */}
-            <div>
-              <label className="input-label">I want to join as</label>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                {ROLES.map(role => (
-                  <motion.button
-                    key={role.value}
-                    type="button"
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => set('role', role.value)}
-                    style={{
-                      flex: 1, padding: '12px', borderRadius: '10px', cursor: 'pointer',
-                      border: `1px solid ${form.role === role.value ? 'var(--accent-purple)' : 'var(--border)'}`,
-                      background: form.role === role.value ? 'rgba(124, 58, 237, 0.12)' : 'rgba(255,255,255,0.03)',
-                      color: form.role === role.value ? 'var(--accent-purple-light)' : 'var(--text-secondary)',
-                      transition: 'all 0.2s', textAlign: 'center',
-                      boxShadow: form.role === role.value ? '0 0 0 1px rgba(124,58,237,0.3)' : 'none'
-                    }}
-                    id={`role-${role.value.toLowerCase().replace(' ', '-')}`}
-                  >
-                    <div style={{ fontSize: '1.1rem', marginBottom: '4px' }}>{role.label}</div>
-                    <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>{role.desc}</div>
-                  </motion.button>
-                ))}
+            {/* Workflow info */}
+            <div style={{ display: 'flex', gap: '10px', padding: '12px 14px', borderRadius: '10px', background: 'rgba(124,58,237,0.06)', border: '1px solid rgba(124,58,237,0.2)' }}>
+              <span style={{ fontSize: '1rem', flexShrink: 0 }}>🔧</span>
+              <div>
+                <div style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--accent-purple-light)', marginBottom: '2px' }}>Joining as Problem Solver</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>Everyone starts as a Problem Solver. Buyer access is granted by an Admin after registration.</div>
               </div>
             </div>
-
-            {/* Admin note */}
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-              ℹ️ Admin access is assigned by an existing admin after registration.
-            </p>
 
             <AnimatePresence>
               {error && (
