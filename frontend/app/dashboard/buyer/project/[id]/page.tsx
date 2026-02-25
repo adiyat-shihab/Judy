@@ -64,6 +64,8 @@ export default function BuyerProjectDetail() {
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<string | null>(null);
   const [reviewing, setReviewing] = useState<string | null>(null);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -183,10 +185,31 @@ export default function BuyerProjectDetail() {
     );
   }
 
+  const handleCompleteProject = async () => {
+    setCompleting(true);
+    try {
+      const res = await fetch(`${API}/api/projects/${projectId}/complete`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.message, 'error'); setShowCompleteModal(false); return; }
+      setProject(prev => prev ? { ...prev, status: 'Completed' } : prev);
+      setShowCompleteModal(false);
+      showToast('🎉 Project marked as Completed! Great work all around.', 'success');
+    } catch {
+      showToast('Failed to complete project', 'error');
+    } finally {
+      setCompleting(false);
+    }
+  };
+
   if (!project) return null;
 
   const pendingRequests = requests.filter(r => r.status === 'Pending');
   const submittedTasks = tasks.filter(t => t.status === 'Submitted' || t.status === 'Completed' || t.status === 'Rejected');
+  const allTasksDone = tasks.length > 0 && tasks.every(t => t.status === 'Completed');
+  const canComplete = project.status === 'Assigned' && allTasksDone;
 
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto', padding: '36px 24px' }}>
@@ -460,8 +483,96 @@ export default function BuyerProjectDetail() {
               ))}
             </div>
           </div>
+          {/* ── Complete Project CTA (sticky at bottom of right panel) ── */}
+          {project.status === 'Assigned' && (
+            <motion.div className="glass-card"
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+              style={{ padding: '20px', borderColor: canComplete ? 'rgba(16,185,129,0.4)' : 'var(--border)', background: canComplete ? 'rgba(16,185,129,0.04)' : 'none', transition: 'all 0.4s' }}
+            >
+              <h3 style={{ fontWeight: '600', fontSize: '0.88rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>Project Delivery</h3>
+              {canComplete ? (
+                <>
+                  <p style={{ fontSize: '0.78rem', color: '#34d399', marginBottom: '14px', lineHeight: 1.5 }}>
+                    ✅ All tasks accepted. You can now officially close this project.
+                  </p>
+                  <motion.button whileTap={{ scale: 0.97 }}
+                    onClick={() => setShowCompleteModal(true)}
+                    style={{ width: '100%', padding: '11px', borderRadius: '10px', background: 'linear-gradient(135deg,#10b981,#059669)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: '700', fontSize: '0.875rem', boxShadow: '0 4px 20px rgba(16,185,129,0.3)' }}
+                  >🎉 Mark Project as Completed</motion.button>
+                </>
+              ) : (
+                <>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: 1.5 }}>
+                    Accept all {tasks.length} task{tasks.length !== 1 ? 's' : ''} to unlock project completion.
+                  </p>
+                  <div style={{ width: '100%', padding: '11px', borderRadius: '10px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--text-muted)', fontWeight: '600', fontSize: '0.875rem', textAlign: 'center', cursor: 'not-allowed' }}>
+                    🔒 {tasks.filter(t => t.status !== 'Completed').length > 0 ? `${tasks.filter(t => t.status !== 'Completed').length} task(s) pending` : 'No tasks yet'}
+                  </div>
+                </>
+              )}
+            </motion.div>
+          )}
+
+          {/* Completed archive badge */}
+          {project.status === 'Completed' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              className="glass-card"
+              style={{ padding: '20px', borderColor: 'rgba(16,185,129,0.4)', background: 'rgba(16,185,129,0.06)', textAlign: 'center' }}
+            >
+              <div style={{ fontSize: '1.8rem', marginBottom: '8px' }}>🎉</div>
+              <div style={{ fontWeight: '700', color: '#10b981', marginBottom: '4px' }}>Delivered</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>This project is archived.</div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
+
+      {/* ── Complete Project Confirmation Modal ── */}
+      <AnimatePresence>
+        {showCompleteModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
+            onClick={() => !completing && setShowCompleteModal(false)}
+          >
+            <motion.div initial={{ scale: 0.94, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 16 }}
+              className="glass-card" style={{ width: '100%', maxWidth: '460px', padding: '32px' }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Icon */}
+              <motion.div
+                initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, delay: 0.1 }}
+                style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', margin: '0 auto 20px' }}
+              >🎉</motion.div>
+
+              <h2 style={{ fontWeight: '700', fontSize: '1.15rem', textAlign: 'center', marginBottom: '8px' }}>Complete This Project?</h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.84rem', textAlign: 'center', lineHeight: 1.6, marginBottom: '24px' }}>
+                You are about to officially close <strong>&ldquo;{project.title}&rdquo;</strong>. This action is <strong>irreversible</strong> — the project will be archived and no new tasks can be submitted.
+              </p>
+
+              {/* Task checklist summary */}
+              <div style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '10px', padding: '14px 16px', marginBottom: '24px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>All tasks accepted ✓</div>
+                {tasks.map(t => (
+                  <div key={t._id} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{ color: '#10b981', fontSize: '0.85rem' }}>✓</span>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{t.title}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={() => setShowCompleteModal(false)} disabled={completing}
+                  style={{ flex: 1, padding: '11px', borderRadius: '10px', border: '1px solid var(--border)', background: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: '600', fontSize: '0.875rem' }}
+                >Cancel</button>
+                <motion.button whileTap={{ scale: 0.97 }} onClick={handleCompleteProject} disabled={completing}
+                  style={{ flex: 2, padding: '11px', borderRadius: '10px', background: 'linear-gradient(135deg,#10b981,#059669)', color: 'white', border: 'none', cursor: completing ? 'not-allowed' : 'pointer', fontWeight: '700', fontSize: '0.875rem', opacity: completing ? 0.6 : 1 }}
+                >{completing ? 'Completing...' : '🎉 Confirm & Complete'}</motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
