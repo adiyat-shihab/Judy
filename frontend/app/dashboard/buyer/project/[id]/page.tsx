@@ -242,9 +242,112 @@ export default function BuyerProjectDetail() {
             )}
           </motion.div>
 
-          {/* Requests */}
-          <motion.div className="glass-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* ── TASK SUBMISSIONS ── (only when assigned) */}
+          {project.status !== 'Unassigned' && (
+            <motion.div className="glass-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
+              <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ fontWeight: '600', fontSize: '0.95rem' }}>Task Submissions</h2>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  {tasks.filter(t => t.status === 'Submitted').length} awaiting review
+                </span>
+              </div>
+
+              {tasks.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '12px' }}>📋</div>
+                  <div style={{ fontWeight: '500', marginBottom: '6px' }}>No tasks yet</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>The solver hasn&apos;t created any tasks yet.</div>
+                </div>
+              ) : (
+                <div>
+                  {tasks.map((task, i) => {
+                    const sub = submissions[task._id];
+                    return (
+                      <motion.div key={task._id}
+                        initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                        style={{ padding: '18px 24px', borderBottom: i < tasks.length - 1 ? '1px solid var(--border)' : 'none' }}
+                      >
+                        {/* Task header */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', justifyContent: 'space-between' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '1rem' }}>{TASK_STATUS_ICON[task.status]}</span>
+                            <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{task.title}</span>
+                            <span style={{ padding: '3px 8px', borderRadius: '999px', fontSize: '0.68rem', fontWeight: '600', background: `${STATUS_COLOR[task.status]}15`, color: STATUS_COLOR[task.status], border: `1px solid ${STATUS_COLOR[task.status]}30` }}>
+                              {task.status}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            📅 {new Date(task.timeline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: 1.6, marginBottom: task.status !== 'In-progress' ? '12px' : '0' }}>
+                          {task.description}
+                        </p>
+
+                        {/* Submission info + actions */}
+                        {task.status === 'Submitted' && (
+                          <div style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '10px', padding: '14px 16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                              <div>
+                                <div style={{ fontSize: '0.75rem', color: '#60a5fa', fontWeight: '600', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>📦 Submission</div>
+                                {sub ? (
+                                  <a href={`${API}/${sub.fileUrl}`} target="_blank" rel="noreferrer"
+                                    style={{ fontSize: '0.85rem', color: '#60a5fa', textDecoration: 'none', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                  >
+                                    ⬇ {sub.fileName}
+                                  </a>
+                                ) : (
+                                  <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>File submitted</span>
+                                )}
+                              </div>
+                              {/* Accept / Reject */}
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <motion.button whileTap={{ scale: 0.96 }}
+                                  onClick={() => reviewTask(task._id, 'reject')}
+                                  disabled={reviewing === task._id}
+                                  style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', cursor: reviewing === task._id ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.8rem', opacity: reviewing === task._id ? 0.5 : 1 }}
+                                >❌ Reject</motion.button>
+                                <motion.button whileTap={{ scale: 0.96 }}
+                                  onClick={() => reviewTask(task._id, 'accept')}
+                                  disabled={reviewing === task._id}
+                                  style={{ padding: '8px 16px', borderRadius: '8px', background: 'linear-gradient(135deg,#10b981,#059669)', border: 'none', color: 'white', cursor: reviewing === task._id ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.8rem', opacity: reviewing === task._id ? 0.5 : 1 }}
+                                >{reviewing === task._id ? '...' : '✓ Accept'}</motion.button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {task.status === 'Completed' && (
+                          <div style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ color: '#10b981', fontSize: '1rem' }}>✅</span>
+                            <div>
+                              <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#10b981' }}>Accepted</div>
+                              {sub && (
+                                <a href={`${API}/${sub.fileUrl}`} target="_blank" rel="noreferrer"
+                                  style={{ fontSize: '0.78rem', color: '#34d399', textDecoration: 'none' }}
+                                >⬇ Download: {sub.fileName}</a>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {task.status === 'Rejected' && (
+                          <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '10px', padding: '12px 16px' }}>
+                            <div style={{ fontSize: '0.82rem', color: '#f87171', fontWeight: '500' }}>❌ Rejected — Solver is expected to resubmit.</div>
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* Solver Requests */}
+          <motion.div className="glass-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h2 style={{ fontWeight: '600', fontSize: '0.95rem' }}>Solver Requests</h2>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{pendingRequests.length} pending</span>
             </div>
