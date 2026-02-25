@@ -116,7 +116,7 @@ export const submitTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    if (task.status !== TaskStatus.IN_PROGRESS) {
+    if (task.status !== TaskStatus.IN_PROGRESS && task.status !== TaskStatus.REJECTED) {
       res.status(400).json({ message: 'Task has already been submitted or completed' });
       return;
     }
