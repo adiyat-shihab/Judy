@@ -1,10 +1,12 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import projectRoutes from './routes/projectRoutes';
+import solverRoutes from './routes/solverRoutes';
 
 // Load env vars
 dotenv.config();
@@ -18,10 +20,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve uploaded files statically → GET /uploads/submissions/filename.zip
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api', solverRoutes);
 
 // Health check
 app.get('/', (_req, res) => {
