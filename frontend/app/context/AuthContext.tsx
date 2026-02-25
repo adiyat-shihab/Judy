@@ -1,6 +1,37 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+/**
+ * SECURITY DESIGN:
+ * ─────────────────────────────────────────────────────────────────────────────
+ * 1. The ONLY thing stored client-side is the JWT token (localStorage + cookie).
+ *    The JWT is cryptographically signed by the server secret — it cannot be
+ *    forged or modified without the server invalidating it.
+ *
+ * 2. On EVERY app startup we:
+ *    a. Immediately destroy any legacy `judy_role` plain-text cookie.
+ *    b. Call GET /api/auth/me to get the REAL user + role from the database.
+ *    c. Only set `user` state from the server response — NEVER from localStorage,
+ *       cookies, or any other client-side source.
+ *
+ * 3. EVERY 401 / 403 response anywhere in the app calls `logout()` immediately.
+ *    This prevents stale tokens or privilege-escalation attempts from persisting.
+ *
+ * 4. The session is re-validated whenever the user returns to the tab
+ *    (document `visibilitychange` event) to catch server-side role changes.
+ *
+ * 5. NAV routing in DashboardLayout enforces role-based path access using
+ *    the server-validated `user.role`, not any cookie or local storage value.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -17,98 +48,132 @@ interface AuthContextType {
   login: (userData: User, token: string) => void;
   logout: () => void;
   isLoading: boolean;
+  /** Call this from any component that gets a 401/403 from the backend */
+  handleUnauthorized: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// ─── helpers ──────────────────────────────────────────────────────────────────
+
+/** Nuke every cookie that could carry role/auth info client-side */
+const wipeAuthCookies = (token?: string) => {
+  // Always destroy the plain-text role cookie — this was the vulnerability
+  document.cookie = 'judy_role=; path=/; max-age=0';
+  // Refresh the JWT cookie if we have a valid token, otherwise clear it
+  if (token) {
+    document.cookie = `judy_token=${token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+  } else {
+    document.cookie = 'judy_token=; path=/; max-age=0';
+  }
+};
+
+// ─── provider ────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const tokenRef = useRef<string | null>(null); // sync ref for event handlers
 
-  /**
-   * On every app load, restore the token from localStorage
-   * then IMMEDIATELY validate it against the server's /api/auth/me endpoint.
-   *
-   * The server re-queries MongoDB for the latest role — so if an Admin
-   * changed a user's role, or if someone tampered with cookies/localStorage,
-   * the server response always wins.
-   *
-   * We NEVER store or trust the role from localStorage/cookies.
-   * The only thing stored client-side is the JWT token itself,
-   * which is cryptographically signed and cannot be forged without the JWT_SECRET.
-   */
-  const validateSession = useCallback(async (storedToken: string) => {
+  // ── core: ask the server who this token belongs to ──────────────────────
+  const validateWithServer = useCallback(async (jwt: string): Promise<User | null> => {
     try {
       const res = await fetch(`${API}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${storedToken}` },
+        headers: { Authorization: `Bearer ${jwt}` },
+        // no-cache ensures we always get fresh data from the DB
+        cache: 'no-store',
       });
-
-      if (!res.ok) {
-        // Token invalid / expired / user deleted → force logout
-        clearSession();
-        return;
-      }
-
-      const serverUser: User = await res.json();
-      // Trust only the server response for the user's role
-      setUser(serverUser);
-      setToken(storedToken);
-
-      // Keep the JWT cookie fresh for Next.js middleware (no role stored)
-      document.cookie = `judy_token=${storedToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+      if (!res.ok) return null; // 401 expired / 403 forbidden / 404 deleted user
+      return (await res.json()) as User;
     } catch {
-      // Network error — still load from token so the app doesn't break offline,
-      // but the next API call will fail with 401 if the token is bad.
-      clearSession();
-    } finally {
-      setIsLoading(false);
+      // Network down — we can't validate, treat as invalid for security
+      return null;
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('judy_token');
-    if (storedToken) {
-      validateSession(storedToken);
-    } else {
-      setIsLoading(false);
-    }
-  }, [validateSession]);
-
-  const clearSession = () => {
+  // ── clear everything ─────────────────────────────────────────────────────
+  const logout = useCallback(() => {
     setUser(null);
     setToken(null);
+    tokenRef.current = null;
     localStorage.removeItem('judy_token');
-    document.cookie = 'judy_token=; path=/; max-age=0';
-    // Remove legacy role cookie if present from old sessions
-    document.cookie = 'judy_role=; path=/; max-age=0';
-  };
+    wipeAuthCookies(); // no token arg → clears judy_token too
+  }, []);
 
-  const login = (userData: User, authToken: string) => {
-    // userData comes directly from the server login response — it's trusted.
-    // We only persist the JWT; the role is re-fetched from /me on next load.
+  // ── called by any component that receives 401/403 from any API call ──────
+  const handleUnauthorized = useCallback(() => {
+    logout();
+  }, [logout]);
+
+  // ── startup: destroy legacy role cookie then validate token with server ──
+  useEffect(() => {
+    // STEP 1: Immediately nuke the plain-text judy_role cookie.
+    //         This runs synchronously before any async work so it cannot be
+    //         read by other code during the async validation phase.
+    document.cookie = 'judy_role=; path=/; max-age=0';
+
+    // STEP 2: Get the token from localStorage
+    const storedToken = localStorage.getItem('judy_token');
+    if (!storedToken) {
+      setIsLoading(false);
+      return;
+    }
+
+    // STEP 3: Validate with server — role comes ONLY from /api/auth/me
+    validateWithServer(storedToken).then((serverUser) => {
+      if (serverUser) {
+        setUser(serverUser);      // role is from DB, not from any local value
+        setToken(storedToken);
+        tokenRef.current = storedToken;
+        wipeAuthCookies(storedToken); // keep JWT cookie fresh, role cookie gone
+      } else {
+        // Invalid / expired / deleted — force logout
+        logout();
+      }
+      setIsLoading(false);
+    });
+  }, [validateWithServer, logout]);
+
+  // ── re-validate when user switches back to this tab ──────────────────────
+  useEffect(() => {
+    const onVisibilityChange = async () => {
+      if (document.visibilityState !== 'visible') return;
+      const jwt = tokenRef.current;
+      if (!jwt) return;
+
+      const serverUser = await validateWithServer(jwt);
+      if (serverUser) {
+        // Silently update role in case admin changed it while tab was hidden
+        setUser(serverUser);
+      } else {
+        logout();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [validateWithServer, logout]);
+
+  // ── login: called immediately after a successful /api/auth/login response ─
+  const login = useCallback((userData: User, authToken: string) => {
+    // userData comes from the server's login response — it IS trusted here.
+    // On the next app load, /api/auth/me will re-confirm the role from DB.
     setUser(userData);
     setToken(authToken);
+    tokenRef.current = authToken;
     localStorage.setItem('judy_token', authToken);
-
-    // JWT cookie for Next.js middleware — contains cryptographically signed data,
-    // NOT a plain role string. Cannot be forged without the server's JWT_SECRET.
-    document.cookie = `judy_token=${authToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
-
-    // REMOVED: document.cookie = `judy_role=...` — this was the vulnerability.
-    // Role is now always determined by the server, never by a cookie.
-  };
-
-  const logout = () => {
-    clearSession();
-  };
+    // Store only the JWT (signed) — never store the role in any cookie
+    wipeAuthCookies(authToken);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isLoading, handleUnauthorized }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+// ─── hook ─────────────────────────────────────────────────────────────────────
 
 export function useAuth() {
   const context = useContext(AuthContext);
