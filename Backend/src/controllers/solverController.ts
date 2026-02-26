@@ -3,6 +3,76 @@ import Project, { ProjectStatus } from '../models/Project';
 import SolverRequest, { RequestStatus } from '../models/Request';
 import Task, { TaskStatus } from '../models/Task';
 import Submission from '../models/Submission';
+import SolverProfile from '../models/SolverProfile';
+import User from '../models/User';
+
+// ─────────────────────────────────────────────────────────────
+// PROFILE
+// ─────────────────────────────────────────────────────────────
+
+// @desc    Get solver's own profile + live stats
+// @route   GET /api/solver/profile
+// @access  Private (Problem Solver only)
+export const getSolverProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user._id;
+
+    // Fetch user info
+    const user = await User.findById(userId).select('name email role createdAt');
+    if (!user) { res.status(404).json({ message: 'User not found' }); return; }
+
+    // Get or create the profile doc (upsert on first visit)
+    let profile = await SolverProfile.findOne({ userId });
+    if (!profile) {
+      profile = await SolverProfile.create({ userId });
+    }
+
+    // Aggregate live stats
+    const [totalRequests, totalTasks, completedTasks, assignedProject] = await Promise.all([
+      SolverRequest.countDocuments({ solverId: userId }),
+      Task.countDocuments({ solverId: userId }),
+      Task.countDocuments({ solverId: userId, status: TaskStatus.COMPLETED }),
+      Project.findOne({ solverId: userId, status: ProjectStatus.ASSIGNED }).select('title status'),
+    ]);
+
+    res.status(200).json({
+      user,
+      profile,
+      stats: {
+        totalRequests,
+        totalTasks,
+        completedTasks,
+        assignedProject: assignedProject || null,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Create or update solver's profile
+// @route   PUT /api/solver/profile
+// @access  Private (Problem Solver only)
+export const updateSolverProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user._id;
+    const { bio, skills, hourlyRate, availability, location, portfolio, languages, title } = req.body;
+
+    const profile = await SolverProfile.findOneAndUpdate(
+      { userId },
+      { bio, skills, hourlyRate, availability, location, portfolio, languages, title },
+      { new: true, upsert: true, runValidators: true }
+    );
+
+    res.status(200).json({ message: 'Profile updated successfully', profile });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ─────────────────────────────────────────────────────────────
+// REQUEST TO WORK
+// ─────────────────────────────────────────────────────────────
 
 // @desc    Request to work on a project
 // @route   POST /api/projects/:id/requests

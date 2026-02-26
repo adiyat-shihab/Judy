@@ -7,6 +7,8 @@ import {
   submitTask,
   getTaskSubmission,
   reviewSubmission,
+  getSolverProfile,
+  updateSolverProfile,
 } from '../controllers/solverController';
 import { protect, authorize } from '../middlewares/authMiddleware';
 import upload from '../middlewares/uploadMiddleware';
@@ -16,6 +18,11 @@ const router = express.Router();
 
 // All routes require authentication
 router.use(protect);
+
+// @route GET  /api/solver/profile  → Solver fetches/initialises their profile + stats
+// @route PUT  /api/solver/profile  → Solver creates or updates their profile
+router.get('/solver/profile', authorize(Role.PROBLEM_SOLVER), getSolverProfile);
+router.put('/solver/profile', authorize(Role.PROBLEM_SOLVER), updateSolverProfile);
 
 // @route GET  /api/solver/my-project → Solver fetches their currently assigned project
 router.get('/solver/my-project', authorize(Role.PROBLEM_SOLVER), getMyProject);
