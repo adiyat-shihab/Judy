@@ -32,9 +32,12 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 export const getProjects = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = (req as any).user;
-    const query = user.role === 'Buyer'
-      ? { buyerId: user._id }                        // buyer sees only their projects
-      : { status: ProjectStatus.UNASSIGNED };        // solvers/admins browse open projects
+    const query =
+      user.role === 'Buyer'
+        ? { buyerId: user._id }                     // buyer sees only their own projects
+        : user.role === 'Admin'
+        ? {}                                        // admin sees ALL projects on the platform
+        : { status: ProjectStatus.UNASSIGNED };     // solvers browse open (unassigned) projects
 
     const projects = await Project.find(query)
       .populate('buyerId', 'name email')
