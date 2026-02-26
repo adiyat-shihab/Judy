@@ -132,7 +132,6 @@ export default function AdminDashboard() {
       if (!res.ok) { showToast(data.message, 'error'); return; }
       setApplications(prev => prev.map(a => a._id === appId ? { ...a, status: action === 'approve' ? 'Approved' : 'Rejected' } : a));
       if (action === 'approve') {
-        // Also update user list role
         const app = applications.find(a => a._id === appId);
         if (app) setUsers(prev => prev.map(u => u._id === app.solverId._id ? { ...u, role: 'Buyer' } : u));
       }
@@ -184,7 +183,7 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Confirm promote modal */}
+      {/* ── Confirm promote modal ── */}
       <AnimatePresence>
         {confirmUser && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
