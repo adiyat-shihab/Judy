@@ -1,8 +1,8 @@
-# 🌟 RacoAI Marketplace Project Workflow System
+# 🌟 Judy Project Workflow System
 
 ![Banner](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge) ![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge) ![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)
 
-Welcome to the **RacoAI Full-Stack Challenge** repository! This project simulates a real-world client workflow for a Marketplace Projects Division. 
+This project simulates a real-world client workflow for a Marketplace Projects Division. 
 
 It is a complete, role-based platform where **Buyers** can post projects, **Problem Solvers** can bid on and execute them through sub-tasks, and **Admins** oversee the entire ecosystem—all tied together with strict state transitions, raw ZIP file delivery, and smooth UI animations.
 

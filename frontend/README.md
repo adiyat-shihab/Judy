@@ -1,6 +1,6 @@
-# 🎨 Frontend Application — RacoAI Marketplace
+# 🎨 Frontend Application — Judy Marketplace
 
-A highly interactive, role-based dashboard for the RacoAI Marketplace workflow challenge, built with Next.js, Tailwind CSS, and Framer Motion. This application provides distinct internal views for **Admins**, **Buyers**, and **Problem Solvers**, utilizing smooth, state-driven animations to represent the project lifecycle.
+A highly interactive, role-based dashboard for the Judy Marketplace workflow challenge, built with Next.js, Tailwind CSS, and Framer Motion. This application provides distinct internal views for **Admins**, **Buyers**, and **Problem Solvers**, utilizing smooth, state-driven animations to represent the project lifecycle.
 
 ---
 

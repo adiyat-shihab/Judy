@@ -69,7 +69,7 @@ bun run dev
 ### Environment Variables (`.env`)
 
 ```env
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/racoai
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net
 JWT_SECRET=your_super_secret_key
 PORT=5000
 NODE_ENV=development

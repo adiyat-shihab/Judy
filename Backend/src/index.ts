@@ -34,7 +34,7 @@ app.use('/api/applications', applicationRoutes);
 
 // Health check
 app.get('/', (_req, res) => {
-  res.send('RacoAI Marketplace API is running...');
+  res.send('Judy API is running...');
 });
 
 const PORT = process.env.PORT || 5000;
