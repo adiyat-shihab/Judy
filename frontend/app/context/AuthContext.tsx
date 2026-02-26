@@ -116,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // STEP 2: Get the token from localStorage
     const storedToken = localStorage.getItem('judy_token');
     if (!storedToken) {
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 0);
       return;
     }
 

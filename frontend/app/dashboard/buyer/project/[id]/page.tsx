@@ -207,7 +207,6 @@ export default function BuyerProjectDetail() {
   if (!project) return null;
 
   const pendingRequests = requests.filter(r => r.status === 'Pending');
-  const submittedTasks = tasks.filter(t => t.status === 'Submitted' || t.status === 'Completed' || t.status === 'Rejected');
   const allTasksDone = tasks.length > 0 && tasks.every(t => t.status === 'Completed');
   const canComplete = project.status === 'Assigned' && allTasksDone;
 

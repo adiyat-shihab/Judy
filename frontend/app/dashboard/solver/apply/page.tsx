@@ -85,7 +85,7 @@ export default function ApplyForBuyerPage() {
         <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Role Upgrade</div>
         <h1 style={{ fontWeight: '800', fontSize: '1.8rem', marginBottom: '8px' }}>Apply for Buyer Role</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-          As a Buyer, you can post projects and hire Problem Solvers. Tell an Admin why you'd like Buyer access.
+          As a Buyer, you can post projects and hire Problem Solvers. Tell an Admin why you&apos;d like Buyer access.
         </p>
       </motion.div>
 

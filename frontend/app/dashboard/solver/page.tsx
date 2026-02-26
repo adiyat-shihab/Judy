@@ -57,7 +57,7 @@ export default function SolverDashboard() {
   };
 
   // Solver can only see Unassigned projects via API; any assigned project is detected separately
-  const assignedProject = projects.find(p => p.solverId?._id === (user as any)?._id);
+  const assignedProject = projects.find(p => p.solverId?._id === user?._id);
   const openProjects = projects.filter(p => p.status === 'Unassigned');
 
   return (
