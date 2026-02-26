@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 
@@ -88,7 +89,7 @@ export default function RegisterPage() {
             width: '64px', height: '64px', marginBottom: '14px',
             overflow: 'hidden',
           }}>
-            <img src="/judy-icon.png" alt="Judy Icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <Image src="/judy-icon.png" alt="Judy Icon" width={64} height={64} style={{ width: '100%', height: '100%', objectFit: 'contain' }} priority />
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '6px' }}>Create your account</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Join the Judy marketplace</p>

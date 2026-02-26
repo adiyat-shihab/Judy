@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from './context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -534,7 +535,7 @@ export default function Home() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 {/* logo icon */}
                 <div style={{ width: '36px', height: '36px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src="/judy-icon.png" alt="Judy Icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <Image src="/judy-icon.png" alt="Judy Icon" width={36} height={36} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <span style={{ fontWeight: '800', fontSize: '1.15rem' }}>Judy</span>
               </div>
