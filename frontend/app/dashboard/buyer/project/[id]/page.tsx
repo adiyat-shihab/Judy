@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../../../context/AuthContext';
@@ -73,7 +73,7 @@ export default function BuyerProjectDetail() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const loadTasks = async (pid: string) => {
+  const loadTasks = useCallback(async (pid: string) => {
     const tRes = await fetch(`${API}/api/projects/${pid}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
     if (tRes.ok) {
       const taskData: Task[] = await tRes.json();
@@ -83,8 +83,8 @@ export default function BuyerProjectDetail() {
       const subMap: Record<string, Submission> = {};
       await Promise.all(
         taskData
-          .filter(t => t.status !== 'In-progress')
-          .map(async t => {
+          .filter((t: Task) => t.status !== 'In-progress')
+          .map(async (t: Task) => {
             try {
               const sRes = await fetch(`${API}/api/tasks/${t._id}/submission`, { headers: { Authorization: `Bearer ${token}` } });
               if (sRes.ok) {
@@ -96,7 +96,7 @@ export default function BuyerProjectDetail() {
       );
       setSubmissions(subMap);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     const load = async () => {
@@ -120,7 +120,7 @@ export default function BuyerProjectDetail() {
       }
     };
     if (token) load();
-  }, [token, projectId]);
+  }, [token, projectId, loadTasks]);
 
   const assignSolver = async (requestId: string) => {
     setAssigning(requestId);
