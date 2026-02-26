@@ -14,33 +14,51 @@ interface Application {
   status: 'Pending' | 'Approved' | 'Rejected';
   createdAt: string;
 }
+interface Project {
+  _id: string;
+  title: string;
+  description: string;
+  status: 'Unassigned' | 'Assigned' | 'Completed';
+  buyerId: { _id: string; name: string; email: string };
+  solverId?: { _id: string; name: string; email: string };
+  createdAt: string;
+}
 
 const ROLE_COLOR: Record<string, string> = { Admin: '#ef4444', Buyer: '#3b82f6', 'Problem Solver': '#10b981' };
 const ROLE_ICON: Record<string, string>  = { Admin: '🛡️', Buyer: '🛒', 'Problem Solver': '🔧' };
 const APP_COLOR: Record<string, string>  = { Pending: '#f59e0b', Approved: '#10b981', Rejected: '#ef4444' };
 const APP_ICON: Record<string, string>   = { Pending: '⏳', Approved: '✅', Rejected: '❌' };
+const PROJ_COLOR: Record<string, string> = { Unassigned: '#f59e0b', Assigned: '#3b82f6', Completed: '#10b981' };
+const PROJ_ICON: Record<string, string>  = { Unassigned: '📭', Assigned: '⚡', Completed: '✅' };
 
-type Tab = 'users' | 'applications';
+type Tab        = 'users' | 'applications' | 'projects';
 type UserFilter = 'All' | 'Problem Solver' | 'Buyer' | 'Admin';
 type AppFilter  = 'All' | 'Pending' | 'Approved' | 'Rejected';
+type ProjFilter = 'All' | 'Unassigned' | 'Assigned' | 'Completed';
 
 export default function AdminDashboard() {
   const { token, user: adminUser } = useAuth();
-  const [tab, setTab] = useState<Tab>('applications'); // default to applications so admin sees pending first
+  const [tab, setTab] = useState<Tab>('applications');
 
   // Users state
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers]               = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  const [promoting, setPromoting] = useState<string | null>(null);
-  const [userFilter, setUserFilter] = useState<UserFilter>('All');
-  const [userSearch, setUserSearch] = useState('');
-  const [confirmUser, setConfirmUser] = useState<User | null>(null);
+  const [promoting, setPromoting]       = useState<string | null>(null);
+  const [userFilter, setUserFilter]     = useState<UserFilter>('All');
+  const [userSearch, setUserSearch]     = useState('');
+  const [confirmUser, setConfirmUser]   = useState<User | null>(null);
 
   // Applications state
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loadingApps, setLoadingApps] = useState(true);
-  const [reviewing, setReviewing] = useState<string | null>(null);
-  const [appFilter, setAppFilter] = useState<AppFilter>('Pending');
+  const [loadingApps, setLoadingApps]   = useState(true);
+  const [reviewing, setReviewing]       = useState<string | null>(null);
+  const [appFilter, setAppFilter]       = useState<AppFilter>('Pending');
+
+  // Projects state
+  const [projects, setProjects]           = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [projFilter, setProjFilter]       = useState<ProjFilter>('All');
+  const [projSearch, setProjSearch]       = useState('');
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -71,6 +89,18 @@ export default function AdminDashboard() {
       finally { setLoadingApps(false); }
     };
     if (token) fetchApps();
+  }, [token]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch(`${API}/api/projects`, { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        if (res.ok) setProjects(data);
+      } catch { showToast('Failed to load projects', 'error'); }
+      finally { setLoadingProjects(false); }
+    };
+    if (token) fetchProjects();
   }, [token]);
 
   const assignBuyer = async (userId: string) => {
