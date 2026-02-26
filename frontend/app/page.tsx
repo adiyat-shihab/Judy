@@ -47,13 +47,56 @@ const STATS = [
   { value: '100%', label: 'JWT Secured',      sub: 'Stateless & server-validated' },
 ];
 
+/* Feature cards — now with lucide icons + colored borders */
 const FEATURES = [
-  { icon: '⚡', gradient: 'linear-gradient(135deg,#f59e0b,#ef4444)', title: 'Strict Workflow',     desc: 'Projects follow a locked Unassigned→Assigned→Completed lifecycle — no state skipping, ever.' },
-  { icon: '🛡️', gradient: 'linear-gradient(135deg,#ec4899,#a855f7)', title: 'Role-Based Access',   desc: 'Every API route is protected by server-side JWT middleware. Zero trust on the frontend.' },
-  { icon: '📊', gradient: 'linear-gradient(135deg,#f97316,#dc2626)', title: 'Admin Oversight',     desc: 'Admins get a full platform view: all users, all projects, all applications — in real time.' },
-  { icon: '🕐', gradient: 'linear-gradient(135deg,#6366f1,#3b82f6)', title: 'Animated Transitions', desc: 'Every state change triggers a Framer Motion animation so the lifecycle is always visible.' },
-  { icon: '🌍', gradient: 'linear-gradient(135deg,#06b6d4,#10b981)', title: 'Buyer Marketplace',   desc: 'Buyers create projects and choose from competing solver requests — Upwork style.' },
-  { icon: '📦', gradient: 'linear-gradient(135deg,#a855f7,#06b6d4)', title: 'Secure ZIP Delivery', desc: 'Solvers upload a ZIP submission; Multer validates the file type server-side before storage.' },
+  {
+    icon: Zap,
+    gradient: 'linear-gradient(135deg,#f59e0b,#ef4444)',
+    borderColor: 'rgba(245,158,11,0.45)',
+    glowColor: 'rgba(245,158,11,0.18)',
+    title: 'Strict Workflow',
+    desc: 'Projects follow a locked Unassigned→Assigned→Completed lifecycle — no state skipping, ever.',
+  },
+  {
+    icon: ShieldCheck,
+    gradient: 'linear-gradient(135deg,#ec4899,#a855f7)',
+    borderColor: 'rgba(236,72,153,0.45)',
+    glowColor: 'rgba(236,72,153,0.18)',
+    title: 'Role-Based Access',
+    desc: 'Every API route is protected by server-side JWT middleware. Zero trust on the frontend.',
+  },
+  {
+    icon: BarChart3,
+    gradient: 'linear-gradient(135deg,#f97316,#dc2626)',
+    borderColor: 'rgba(249,115,22,0.45)',
+    glowColor: 'rgba(249,115,22,0.18)',
+    title: 'Admin Oversight',
+    desc: 'Admins get a full platform view: all users, all projects, all applications — in real time.',
+  },
+  {
+    icon: Clock,
+    gradient: 'linear-gradient(135deg,#6366f1,#3b82f6)',
+    borderColor: 'rgba(99,102,241,0.45)',
+    glowColor: 'rgba(99,102,241,0.18)',
+    title: 'Animated Transitions',
+    desc: 'Every state change triggers a Framer Motion animation so the lifecycle is always visible.',
+  },
+  {
+    icon: Globe,
+    gradient: 'linear-gradient(135deg,#06b6d4,#10b981)',
+    borderColor: 'rgba(6,182,212,0.45)',
+    glowColor: 'rgba(6,182,212,0.18)',
+    title: 'Buyer Marketplace',
+    desc: 'Buyers create projects and choose from competing solver requests — Upwork style.',
+  },
+  {
+    icon: Code2,
+    gradient: 'linear-gradient(135deg,#a855f7,#06b6d4)',
+    borderColor: 'rgba(168,85,247,0.45)',
+    glowColor: 'rgba(168,85,247,0.18)',
+    title: 'Secure ZIP Delivery',
+    desc: 'Solvers upload a ZIP submission; Multer validates the file type server-side before storage.',
+  },
 ];
 
 const TESTIMONIALS = [
@@ -249,26 +292,43 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* 3 × 2 grid */}
+          {/* 3 × 2 grid — each card has its own static colored border + centered layout */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '20px' }}>
-            {FEATURES.map((f, i) => (
-              <motion.div key={f.title}
-                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                whileHover={{ y: -6, boxShadow: '0 16px 48px rgba(0,0,0,0.35)', borderColor: 'rgba(124,58,237,0.35)' }}
-                style={{ padding: '32px 28px', borderRadius: '16px',
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
-                  backdropFilter: 'blur(12px)', cursor: 'default', transition: 'box-shadow 0.25s,border-color 0.25s,transform 0.25s' }}>
-                {/* icon */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: '52px', height: '52px', borderRadius: '14px', background: f.gradient,
-                  fontSize: '1.5rem', marginBottom: '20px', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
-                  {f.icon}
-                </div>
-                <h3 style={{ fontWeight: '700', fontSize: '1rem', marginBottom: '10px' }}>{f.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.7 }}>{f.desc}</p>
-              </motion.div>
-            ))}
+            {FEATURES.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <motion.div key={f.title}
+                  initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                  whileHover={{ y: -6, boxShadow: `0 16px 48px ${f.glowColor}` }}
+                  style={{
+                    padding: '32px 28px',
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${f.borderColor}`,
+                    backdropFilter: 'blur(12px)',
+                    cursor: 'default',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    transition: 'box-shadow 0.25s, transform 0.25s',
+                  }}>
+                  {/* gradient icon box */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '52px', height: '52px', borderRadius: '14px',
+                    background: f.gradient,
+                    marginBottom: '20px',
+                    boxShadow: `0 4px 20px ${f.glowColor}`,
+                  }}>
+                    <Icon size={24} color="white" strokeWidth={2} />
+                  </div>
+                  <h3 style={{ fontWeight: '700', fontSize: '1rem', marginBottom: '10px' }}>{f.title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.7, textAlign: 'center' }}>{f.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
