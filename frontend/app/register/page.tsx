@@ -85,11 +85,10 @@ export default function RegisterPage() {
         >
           <div style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: '52px', height: '52px', borderRadius: '14px', marginBottom: '14px',
-            background: 'linear-gradient(135deg, #7c3aed, #3b82f6)',
-            boxShadow: '0 8px 32px rgba(124, 58, 237, 0.4)'
+            width: '64px', height: '64px', marginBottom: '14px',
+            overflow: 'hidden',
           }}>
-            <span style={{ fontSize: '22px' }}>⚡</span>
+            <img src="/judy-icon.png" alt="Judy Icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '6px' }}>Create your account</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Join the Judy marketplace</p>

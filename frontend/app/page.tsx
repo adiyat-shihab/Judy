@@ -533,11 +533,8 @@ export default function Home() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 {/* logo icon */}
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px',
-                  background: 'linear-gradient(135deg,#7c3aed,#3b82f6)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 16px rgba(124,58,237,0.4)' }}>
-                  <Zap size={18} color="white" />
+                <div style={{ width: '36px', height: '36px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src="/judy-icon.png" alt="Judy Icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <span style={{ fontWeight: '800', fontSize: '1.15rem' }}>Judy</span>
               </div>
