@@ -4,31 +4,24 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
-
-/* ─────────── inline SVG icons ─────────── */
-const IconSparkles = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/>
-    <path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/>
-  </svg>
-);
-const IconArrow = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 8L22 12L18 16"/><path d="M2 12H22"/>
-  </svg>
-);
-const IconLogin = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-    <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
-  </svg>
-);
-const IconChevronL = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-);
-const IconChevronR = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-);
+import {
+  Zap,
+  ShieldCheck,
+  BarChart3,
+  Clock,
+  Globe,
+  Code2,
+  Sparkles,
+  ArrowRight,
+  LogIn,
+  ChevronLeft,
+  ChevronRight,
+  Twitter,
+  Github,
+  Linkedin,
+  Mail,
+  CheckCircle2,
+} from 'lucide-react';
 
 /* ─────────── constants ─────────── */
 const PARTICLES = [
@@ -154,7 +147,7 @@ export default function Home() {
               borderRadius: '999px', fontSize: '0.78rem', fontWeight: '600',
               background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)',
               color: '#a855f7', marginBottom: '28px' }}>
-            <IconSparkles /> Role-Based Project Marketplace
+            <Sparkles size={14} /> Role-Based Project Marketplace
           </motion.div>
 
           {/* heading */}
@@ -180,13 +173,13 @@ export default function Home() {
                 borderRadius: '10px', fontWeight: '700', fontSize: '0.95rem', textDecoration: 'none',
                 background: 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white',
                 boxShadow: '0 4px 20px rgba(124,58,237,0.35)' }}>
-              Get Started <IconArrow />
+              Get Started <ArrowRight size={17} />
             </motion.a>
             <motion.a href="/login" whileHover={{ background: 'rgba(124,58,237,0.1)', scale: 1.03 }} whileTap={{ scale: 0.97 }}
               style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '13px 28px',
                 borderRadius: '10px', fontWeight: '600', fontSize: '0.95rem', textDecoration: 'none',
                 border: '1px solid rgba(124,58,237,0.4)', color: 'var(--text-primary)', background: 'transparent' }}>
-              <IconLogin /> Sign In
+              <LogIn size={16} /> Sign In
             </motion.a>
           </motion.div>
 
@@ -296,12 +289,11 @@ export default function Home() {
           {/* header */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             style={{ textAlign: 'center', marginBottom: '56px' }}>
-            {/* badge */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '5px 14px',
               borderRadius: '999px', fontSize: '0.78rem', fontWeight: '600',
               background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)',
               color: '#a855f7', marginBottom: '20px' }}>
-              <IconSparkles /> User Stories
+              <Sparkles size={14} /> User Stories
             </div>
             <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: '800', marginBottom: '14px', letterSpacing: '-0.02em' }}>
               Loved by{' '}
@@ -322,16 +314,20 @@ export default function Home() {
                 width: '42px', height: '42px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.12)',
                 background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(10px)', cursor: 'pointer',
                 color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <IconChevronL />
+              <ChevronLeft size={18} strokeWidth={2.5} />
             </motion.button>
 
-            {/* cards */}
+            {/* cards grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px', overflow: 'hidden' }}>
-              <AnimatePresence mode="sync">
+              <AnimatePresence mode="popLayout" initial={false} custom={dir}>
                 {visible.map((t, i) => (
-                  <motion.div key={`${t.name}-${i}`}
-                    initial={{ opacity: 0, x: dir * 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -dir * 40 }}
-                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  <motion.div
+                    key={`${slide}-${i}`}
+                    custom={dir}
+                    initial={(d: number) => ({ opacity: 0, x: d * 80 })}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={(d: number) => ({ opacity: 0, x: d * -80 })}
+                    transition={{ duration: 0.35, ease: 'easeInOut' }}
                     style={{ padding: '28px 24px', borderRadius: '16px',
                       background: `linear-gradient(135deg, ${t.color}12 0%, rgba(255,255,255,0.03) 100%)`,
                       border: `1px solid ${t.color}25`,
@@ -374,7 +370,7 @@ export default function Home() {
                 width: '42px', height: '42px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.12)',
                 background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(10px)', cursor: 'pointer',
                 color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <IconChevronR />
+              <ChevronRight size={18} strokeWidth={2.5} />
             </motion.button>
           </div>
 
