@@ -158,7 +158,6 @@ export default function Home() {
           backgroundImage: 'radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px)',
           backgroundSize: '40px 40px' }} />
 
-        {/* ── 3 gradient blobs matching reference ── */}
         {/* LEFT — purple/fuchsia */}
         <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.55, 0.7, 0.55] }}
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
@@ -342,7 +341,7 @@ export default function Home() {
       {/* ══════════════ TESTIMONIALS ══════════════ */}
       <section style={{ position: 'relative', padding: '100px 24px 120px', background: 'var(--bg-primary)', overflow: 'hidden' }}>
 
-        {/* glow blobs for this section */}
+        {/* glow blobs */}
         <div style={{ position: 'absolute', top: '20%', left: '-6%', width: '360px', height: '360px',
           background: 'radial-gradient(circle,rgba(124,58,237,0.2),transparent 70%)',
           borderRadius: '50%', filter: 'blur(60px)', zIndex: 0 }} />
@@ -372,7 +371,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* carousel */}
+          {/* carousel — FIXED: exit left, enter from right */}
           <div style={{ position: 'relative' }}>
             {/* prev */}
             <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.94 }} onClick={() => navigate(-1)}
