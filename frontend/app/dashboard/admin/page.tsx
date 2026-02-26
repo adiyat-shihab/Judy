@@ -149,12 +149,33 @@ export default function AdminDashboard() {
 
   const filteredApps = applications.filter(a => appFilter === 'All' || a.status === appFilter);
 
-  const stats = { total: users.length, buyers: users.filter(u => u.role === 'Buyer').length, solvers: users.filter(u => u.role === 'Problem Solver').length, pending: applications.filter(a => a.status === 'Pending').length };
+  const filteredProjects = projects.filter(p => {
+    const matchFilter = projFilter === 'All' || p.status === projFilter;
+    const matchSearch =
+      p.title.toLowerCase().includes(projSearch.toLowerCase()) ||
+      p.buyerId?.name?.toLowerCase().includes(projSearch.toLowerCase()) ||
+      p.solverId?.name?.toLowerCase().includes(projSearch.toLowerCase());
+    return matchFilter && matchSearch;
+  });
+
+  const stats = {
+    total:    users.length,
+    buyers:   users.filter(u => u.role === 'Buyer').length,
+    solvers:  users.filter(u => u.role === 'Problem Solver').length,
+    pending:  applications.filter(a => a.status === 'Pending').length,
+    projects: projects.length,
+  };
+
+  const NAV_TABS: { id: Tab; icon: string; label: string; badge?: number }[] = [
+    { id: 'applications', icon: '📋', label: 'Applications', badge: stats.pending },
+    { id: 'users',        icon: '👥', label: 'All Users' },
+    { id: 'projects',     icon: '📁', label: 'Projects',     badge: stats.projects > 0 ? stats.projects : undefined },
+  ];
 
   return (
     <div style={{ padding: '32px', maxWidth: '1280px', margin: '0 auto' }}>
 
-      {/* Toast */}
+      {/* ── Toast ── */}
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -214,10 +235,11 @@ export default function AdminDashboard() {
           <motion.div className="glass-card" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.07 }} style={{ padding: '20px' }}>
             <div style={{ fontWeight: '600', fontSize: '0.88rem', marginBottom: '14px', color: 'var(--text-secondary)' }}>Platform Stats</div>
             {[
-              { label: 'Total Users', value: stats.total, color: 'var(--text-primary)' },
-              { label: 'Problem Solvers', value: stats.solvers, color: '#10b981' },
-              { label: 'Buyers', value: stats.buyers, color: '#3b82f6' },
-              { label: 'Pending Applications', value: stats.pending, color: '#f59e0b' },
+              { label: 'Total Users',            value: stats.total,    color: 'var(--text-primary)' },
+              { label: 'Problem Solvers',         value: stats.solvers,  color: '#10b981' },
+              { label: 'Buyers',                  value: stats.buyers,   color: '#3b82f6' },
+              { label: 'Pending Applications',    value: stats.pending,  color: '#f59e0b' },
+              { label: 'Total Projects',          value: stats.projects, color: '#a855f7' },
             ].map(s => (
               <div key={s.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid var(--border)' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.83rem' }}>{s.label}</span>
@@ -228,15 +250,14 @@ export default function AdminDashboard() {
 
           {/* Nav tabs */}
           <motion.div className="glass-card" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.12 }} style={{ padding: '8px' }}>
-            {[
-              { id: 'applications' as Tab, icon: '📋', label: 'Applications', badge: stats.pending },
-              { id: 'users' as Tab, icon: '👥', label: 'All Users' },
-            ].map(item => (
+            {NAV_TABS.map(item => (
               <motion.button key={item.id} whileTap={{ scale: 0.97 }} onClick={() => setTab(item.id)}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', border: 'none', background: tab === item.id ? 'rgba(124,58,237,0.15)' : 'transparent', color: tab === item.id ? '#a855f7' : 'var(--text-secondary)', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', marginBottom: '4px', textAlign: 'left' }}
               >
                 <span>{item.icon} {item.label}</span>
-                {item.badge ? <span style={{ padding: '2px 8px', borderRadius: '999px', fontSize: '0.7rem', fontWeight: '700', background: 'rgba(245,158,11,0.2)', color: '#f59e0b' }}>{item.badge}</span> : null}
+                {item.badge != null ? (
+                  <span style={{ padding: '2px 8px', borderRadius: '999px', fontSize: '0.7rem', fontWeight: '700', background: item.id === 'projects' ? 'rgba(168,85,247,0.2)' : 'rgba(245,158,11,0.2)', color: item.id === 'projects' ? '#a855f7' : '#f59e0b' }}>{item.badge}</span>
+                ) : null}
               </motion.button>
             ))}
           </motion.div>
