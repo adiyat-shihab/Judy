@@ -265,165 +265,295 @@ export default function AdminDashboard() {
 
         {/* ── RIGHT PANEL ── */}
         <div>
+          <AnimatePresence mode="wait">
 
-          {/* ── APPLICATIONS TAB ── */}
-          {tab === 'applications' && (
-            <motion.div key="applications" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-              <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-                <div>
-                  <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>Buyer Applications</h1>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Review and approve Solver requests to become Buyers.</p>
-                </div>
-              </div>
-
-              {/* Filter tabs */}
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', background: 'rgba(255,255,255,0.04)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)', width: 'fit-content' }}>
-                {(['Pending', 'Approved', 'Rejected', 'All'] as AppFilter[]).map(f => (
-                  <motion.button key={f} whileTap={{ scale: 0.96 }} onClick={() => setAppFilter(f)}
-                    style={{ padding: '6px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', border: 'none', background: appFilter === f ? 'rgba(124,58,237,0.2)' : 'transparent', color: appFilter === f ? '#a855f7' : 'var(--text-muted)', transition: 'all 0.2s' }}
-                  >{f}</motion.button>
-                ))}
-              </div>
-
-              <div className="glass-card">
-                <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: '600', fontSize: '0.92rem' }}>{appFilter} Applications</span>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{filteredApps.length} total</span>
-                </div>
-
-                {loadingApps ? (
-                  <div style={{ padding: '60px', textAlign: 'center' }}>
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                      style={{ width: '26px', height: '26px', border: '2px solid rgba(124,58,237,0.3)', borderTopColor: '#7c3aed', borderRadius: '50%', margin: '0 auto' }} />
-                  </div>
-                ) : filteredApps.length === 0 ? (
-                  <div style={{ padding: '60px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2rem', marginBottom: '12px' }}>📭</div>
-                    <div style={{ fontWeight: '600', marginBottom: '6px' }}>No {appFilter.toLowerCase()} applications</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>When solvers apply for Buyer access, they&apos;ll appear here.</div>
-                  </div>
-                ) : (
+            {/* ── APPLICATIONS TAB ── */}
+            {tab === 'applications' && (
+              <motion.div key="applications" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
                   <div>
+                    <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>Buyer Applications</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Review and approve Solver requests to become Buyers.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', background: 'rgba(255,255,255,0.04)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)', width: 'fit-content' }}>
+                  {(['Pending', 'Approved', 'Rejected', 'All'] as AppFilter[]).map(f => (
+                    <motion.button key={f} whileTap={{ scale: 0.96 }} onClick={() => setAppFilter(f)}
+                      style={{ padding: '6px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', border: 'none', background: appFilter === f ? 'rgba(124,58,237,0.2)' : 'transparent', color: appFilter === f ? '#a855f7' : 'var(--text-muted)', transition: 'all 0.2s' }}
+                    >{f}</motion.button>
+                  ))}
+                </div>
+
+                <div className="glass-card">
+                  <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '600', fontSize: '0.92rem' }}>{appFilter} Applications</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{filteredApps.length} total</span>
+                  </div>
+
+                  {loadingApps ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        style={{ width: '26px', height: '26px', border: '2px solid rgba(124,58,237,0.3)', borderTopColor: '#7c3aed', borderRadius: '50%', margin: '0 auto' }} />
+                    </div>
+                  ) : filteredApps.length === 0 ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '12px' }}>📭</div>
+                      <div style={{ fontWeight: '600', marginBottom: '6px' }}>No {appFilter.toLowerCase()} applications</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>When solvers apply for Buyer access, they&apos;ll appear here.</div>
+                    </div>
+                  ) : (
+                    <div>
+                      <AnimatePresence>
+                        {filteredApps.map((app, i) => (
+                          <motion.div key={app._id}
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                            style={{ padding: '20px 24px', borderBottom: i < filteredApps.length - 1 ? '1px solid var(--border)' : 'none' }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#10b981', flexShrink: 0 }}>
+                                  {app.solverId.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{app.solverId.name}</div>
+                                  <div style={{ color: 'var(--text-muted)', fontSize: '0.76rem' }}>{app.solverId.email}</div>
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '600', background: `${APP_COLOR[app.status]}15`, color: APP_COLOR[app.status], border: `1px solid ${APP_COLOR[app.status]}30` }}>
+                                  {APP_ICON[app.status]} {app.status}
+                                </span>
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                  {new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+                            </div>
+                            <div style={{ padding: '12px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: app.status === 'Pending' ? '14px' : '0' }}>
+                              &ldquo;{app.reason}&rdquo;
+                            </div>
+                            {app.status === 'Pending' && (
+                              <div style={{ display: 'flex', gap: '10px' }}>
+                                <motion.button whileTap={{ scale: 0.97 }} onClick={() => reviewApp(app._id, 'reject')}
+                                  disabled={reviewing === app._id}
+                                  style={{ padding: '8px 18px', borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', cursor: reviewing === app._id ? 'not-allowed' : 'pointer', opacity: reviewing === app._id ? 0.5 : 1 }}
+                                >✕ Reject</motion.button>
+                                <motion.button whileTap={{ scale: 0.97 }} onClick={() => reviewApp(app._id, 'approve')}
+                                  disabled={reviewing === app._id}
+                                  style={{ padding: '8px 24px', borderRadius: '8px', fontWeight: '700', fontSize: '0.82rem', background: 'linear-gradient(135deg,#10b981,#059669)', color: 'white', border: 'none', cursor: reviewing === app._id ? 'not-allowed' : 'pointer', opacity: reviewing === app._id ? 0.5 : 1 }}
+                                >{reviewing === app._id ? 'Processing...' : '✓ Approve → Buyer'}</motion.button>
+                              </div>
+                            )}
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── USERS TAB ── */}
+            {tab === 'users' && (
+              <motion.div key="users" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>User Management</h1>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>View all users and manage roles directly.</p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '6px', background: 'rgba(255,255,255,0.04)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                    {(['All', 'Problem Solver', 'Buyer', 'Admin'] as UserFilter[]).map(f => (
+                      <motion.button key={f} whileTap={{ scale: 0.96 }} onClick={() => setUserFilter(f)}
+                        style={{ padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', border: 'none', background: userFilter === f ? 'rgba(124,58,237,0.2)' : 'transparent', color: userFilter === f ? '#a855f7' : 'var(--text-muted)', transition: 'all 0.2s' }}
+                      >{f === 'Problem Solver' ? 'Solvers' : f}</motion.button>
+                    ))}
+                  </div>
+                  <input value={userSearch} onChange={e => setUserSearch(e.target.value)} placeholder="Search by name or email..." className="input-field"
+                    style={{ flex: 1, minWidth: '180px', padding: '8px 14px', fontSize: '0.85rem' }} />
+                </div>
+
+                <div className="glass-card">
+                  <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: '600', fontSize: '0.92rem' }}>{userFilter === 'Problem Solver' ? 'Solvers' : userFilter === 'All' ? 'All Users' : userFilter + 's'}</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</span>
+                  </div>
+                  {loadingUsers ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        style={{ width: '26px', height: '26px', border: '2px solid rgba(124,58,237,0.3)', borderTopColor: '#7c3aed', borderRadius: '50%', margin: '0 auto' }} />
+                    </div>
+                  ) : filteredUsers.length === 0 ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🔍</div>
+                      <div style={{ fontWeight: '600' }}>No users found</div>
+                    </div>
+                  ) : filteredUsers.map((u, i) => (
+                    <motion.div key={u._id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '16px 24px', borderBottom: i < filteredUsers.length - 1 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0, background: `${ROLE_COLOR[u.role]}20`, border: `1px solid ${ROLE_COLOR[u.role]}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.88rem', color: ROLE_COLOR[u.role] }}>
+                          {u.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontWeight: '600', fontSize: '0.88rem' }}>{u.name}</div>
+                          <div style={{ color: 'var(--text-muted)', fontSize: '0.76rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                        <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '600', background: `${ROLE_COLOR[u.role]}15`, color: ROLE_COLOR[u.role], border: `1px solid ${ROLE_COLOR[u.role]}30` }}>
+                          {ROLE_ICON[u.role]} {u.role}
+                        </span>
+                        {u.role === 'Problem Solver' && (
+                          <motion.button whileTap={{ scale: 0.96 }} onClick={() => setConfirmUser(u)} disabled={promoting === u._id}
+                            style={{ padding: '7px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', background: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', color: 'white', border: 'none', opacity: promoting === u._id ? 0.5 : 1 }}
+                          >{promoting === u._id ? '...' : '🛒 Make Buyer'}</motion.button>
+                        )}
+                        {u.role === 'Buyer' && <div style={{ fontSize: '0.76rem', color: '#60a5fa' }}>Buyer active</div>}
+                        {u.role === 'Admin' && <div style={{ fontSize: '0.76rem', color: '#f87171' }}>System admin</div>}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── PROJECTS TAB ── */}
+            {tab === 'projects' && (
+              <motion.div key="projects" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>All Projects</h1>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Monitor every project on the platform — read-only overview.</p>
+                </div>
+
+                {/* Filters row */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '6px', background: 'rgba(255,255,255,0.04)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                    {(['All', 'Unassigned', 'Assigned', 'Completed'] as ProjFilter[]).map(f => (
+                      <motion.button key={f} whileTap={{ scale: 0.96 }} onClick={() => setProjFilter(f)}
+                        style={{ padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', border: 'none', background: projFilter === f ? 'rgba(124,58,237,0.2)' : 'transparent', color: projFilter === f ? '#a855f7' : 'var(--text-muted)', transition: 'all 0.2s' }}
+                      >{f}</motion.button>
+                    ))}
+                  </div>
+                  <input value={projSearch} onChange={e => setProjSearch(e.target.value)} placeholder="Search by title, buyer, or solver..." className="input-field"
+                    style={{ flex: 1, minWidth: '200px', padding: '8px 14px', fontSize: '0.85rem' }} />
+                </div>
+
+                {/* Project count bar */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  {(['Unassigned', 'Assigned', 'Completed'] as const).map(s => {
+                    const count = projects.filter(p => p.status === s).length;
+                    const pct   = projects.length ? Math.round((count / projects.length) * 100) : 0;
+                    return (
+                      <motion.div key={s} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        className="glass-card" style={{ flex: 1, minWidth: '120px', padding: '14px 18px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600' }}>{PROJ_ICON[s]} {s}</span>
+                          <span style={{ fontWeight: '800', fontSize: '1.2rem', color: PROJ_COLOR[s] }}>{count}</span>
+                        </div>
+                        <div style={{ height: '4px', borderRadius: '999px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.6, ease: 'easeOut' }}
+                            style={{ height: '100%', borderRadius: '999px', background: PROJ_COLOR[s] }} />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Projects list */}
+                <div className="glass-card">
+                  <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '600', fontSize: '0.92rem' }}>
+                      {projFilter === 'All' ? 'All Projects' : `${projFilter} Projects`}
+                    </span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}</span>
+                  </div>
+
+                  {loadingProjects ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        style={{ width: '26px', height: '26px', border: '2px solid rgba(124,58,237,0.3)', borderTopColor: '#7c3aed', borderRadius: '50%', margin: '0 auto' }} />
+                    </div>
+                  ) : filteredProjects.length === 0 ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>📁</div>
+                      <div style={{ fontWeight: '600', marginBottom: '6px' }}>No projects found</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                        {projSearch ? 'Try a different search term.' : 'No projects have been created yet.'}
+                      </div>
+                    </div>
+                  ) : (
                     <AnimatePresence>
-                      {filteredApps.map((app, i) => (
-                        <motion.div key={app._id}
-                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                          style={{ padding: '20px 24px', borderBottom: i < filteredApps.length - 1 ? '1px solid var(--border)' : 'none' }}
+                      {filteredProjects.map((p, i) => (
+                        <motion.div key={p._id}
+                          initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          style={{ padding: '20px 24px', borderBottom: i < filteredProjects.length - 1 ? '1px solid var(--border)' : 'none' }}
                         >
-                          {/* Applicant header */}
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#10b981', flexShrink: 0 }}>
-                                {app.solverId.name.charAt(0).toUpperCase()}
+                          {/* Row 1: title + status badge */}
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '10px' }}>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontWeight: '700', fontSize: '0.95rem', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {p.title}
                               </div>
-                              <div>
-                                <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{app.solverId.name}</div>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '0.76rem' }}>{app.solverId.email}</div>
+                              <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                {p.description}
                               </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '600', background: `${APP_COLOR[app.status]}15`, color: APP_COLOR[app.status], border: `1px solid ${APP_COLOR[app.status]}30` }}>
-                                {APP_ICON[app.status]} {app.status}
-                              </span>
-                              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                {new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </span>
-                            </div>
+                            <motion.span
+                              key={p.status}
+                              initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                              style={{ flexShrink: 0, padding: '5px 12px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '700', background: `${PROJ_COLOR[p.status]}18`, color: PROJ_COLOR[p.status], border: `1px solid ${PROJ_COLOR[p.status]}35`, whiteSpace: 'nowrap' }}
+                            >
+                              {PROJ_ICON[p.status]} {p.status}
+                            </motion.span>
                           </div>
 
-                          {/* Reason */}
-                          <div style={{ padding: '12px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: app.status === 'Pending' ? '14px' : '0' }}>
-                            &ldquo;{app.reason}&rdquo;
-                          </div>
-
-                          {/* Approve / Reject actions — only for Pending */}
-                          {app.status === 'Pending' && (
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                              <motion.button whileTap={{ scale: 0.97 }} onClick={() => reviewApp(app._id, 'reject')}
-                                disabled={reviewing === app._id}
-                                style={{ padding: '8px 18px', borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', cursor: reviewing === app._id ? 'not-allowed' : 'pointer', opacity: reviewing === app._id ? 0.5 : 1 }}
-                              >✕ Reject</motion.button>
-                              <motion.button whileTap={{ scale: 0.97 }} onClick={() => reviewApp(app._id, 'approve')}
-                                disabled={reviewing === app._id}
-                                style={{ padding: '8px 24px', borderRadius: '8px', fontWeight: '700', fontSize: '0.82rem', background: 'linear-gradient(135deg,#10b981,#059669)', color: 'white', border: 'none', cursor: reviewing === app._id ? 'not-allowed' : 'pointer', opacity: reviewing === app._id ? 0.5 : 1 }}
-                              >{reviewing === app._id ? 'Processing...' : '✓ Approve → Buyer'}</motion.button>
+                          {/* Row 2: meta info */}
+                          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+                            {/* Buyer */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: '800', color: '#60a5fa', flexShrink: 0 }}>
+                                {p.buyerId?.name?.charAt(0).toUpperCase()}
+                              </div>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                <span style={{ color: 'var(--text-muted)' }}>Buyer: </span>{p.buyerId?.name}
+                              </span>
                             </div>
-                          )}
+
+                            {/* Solver */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              {p.solverId ? (
+                                <>
+                                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: '800', color: '#34d399', flexShrink: 0 }}>
+                                    {p.solverId.name.charAt(0).toUpperCase()}
+                                  </div>
+                                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                    <span style={{ color: 'var(--text-muted)' }}>Solver: </span>{p.solverId.name}
+                                  </span>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '999px', background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)', fontWeight: '600' }}>
+                                  No solver yet
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Date */}
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                              {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </div>
                         </motion.div>
                       ))}
                     </AnimatePresence>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── USERS TAB ── */}
-          {tab === 'users' && (
-            <motion.div key="users" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-              <div style={{ marginBottom: '20px' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>User Management</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>View all users and manage roles directly.</p>
-              </div>
-
-              {/* Filter + search */}
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', gap: '6px', background: 'rgba(255,255,255,0.04)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
-                  {(['All', 'Problem Solver', 'Buyer', 'Admin'] as UserFilter[]).map(f => (
-                    <motion.button key={f} whileTap={{ scale: 0.96 }} onClick={() => setUserFilter(f)}
-                      style={{ padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', border: 'none', background: userFilter === f ? 'rgba(124,58,237,0.2)' : 'transparent', color: userFilter === f ? '#a855f7' : 'var(--text-muted)', transition: 'all 0.2s' }}
-                    >{f === 'Problem Solver' ? 'Solvers' : f}</motion.button>
-                  ))}
+                  )}
                 </div>
-                <input value={userSearch} onChange={e => setUserSearch(e.target.value)} placeholder="Search by name or email..." className="input-field"
-                  style={{ flex: 1, minWidth: '180px', padding: '8px 14px', fontSize: '0.85rem' }} />
-              </div>
+              </motion.div>
+            )}
 
-              <div className="glass-card">
-                <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontWeight: '600', fontSize: '0.92rem' }}>{userFilter === 'Problem Solver' ? 'Solvers' : userFilter === 'All' ? 'All Users' : userFilter + 's'}</span>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</span>
-                </div>
-                {loadingUsers ? (
-                  <div style={{ padding: '60px', textAlign: 'center' }}>
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                      style={{ width: '26px', height: '26px', border: '2px solid rgba(124,58,237,0.3)', borderTopColor: '#7c3aed', borderRadius: '50%', margin: '0 auto' }} />
-                  </div>
-                ) : filteredUsers.length === 0 ? (
-                  <div style={{ padding: '60px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🔍</div>
-                    <div style={{ fontWeight: '600' }}>No users found</div>
-                  </div>
-                ) : filteredUsers.map((u, i) => (
-                  <motion.div key={u._id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '16px 24px', borderBottom: i < filteredUsers.length - 1 ? '1px solid var(--border)' : 'none' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                      <div style={{ width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0, background: `${ROLE_COLOR[u.role]}20`, border: `1px solid ${ROLE_COLOR[u.role]}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.88rem', color: ROLE_COLOR[u.role] }}>
-                        {u.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: '600', fontSize: '0.88rem' }}>{u.name}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.76rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                      <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '600', background: `${ROLE_COLOR[u.role]}15`, color: ROLE_COLOR[u.role], border: `1px solid ${ROLE_COLOR[u.role]}30` }}>
-                        {ROLE_ICON[u.role]} {u.role}
-                      </span>
-                      {u.role === 'Problem Solver' && (
-                        <motion.button whileTap={{ scale: 0.96 }} onClick={() => setConfirmUser(u)} disabled={promoting === u._id}
-                          style={{ padding: '7px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', background: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', color: 'white', border: 'none', opacity: promoting === u._id ? 0.5 : 1 }}
-                        >{promoting === u._id ? '...' : '🛒 Make Buyer'}</motion.button>
-                      )}
-                      {u.role === 'Buyer' && <div style={{ fontSize: '0.76rem', color: '#60a5fa' }}>Buyer active</div>}
-                      {u.role === 'Admin' && <div style={{ fontSize: '0.76rem', color: '#f87171' }}>System admin</div>}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
