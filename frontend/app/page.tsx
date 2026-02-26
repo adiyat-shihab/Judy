@@ -390,9 +390,14 @@ export default function Home() {
                   <motion.div
                     key={`${slide}-${i}`}
                     custom={dir}
-                    initial={(d: number) => ({ opacity: 0, x: d * 80 })}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={(d: number) => ({ opacity: 0, x: d * -80 })}
+                    variants={{
+                      initial: (d: number) => ({ opacity: 0, x: d * 80 }),
+                      animate: { opacity: 1, x: 0 },
+                      exit: (d: number) => ({ opacity: 0, x: d * -80 }),
+                    }}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
                     transition={{ duration: 0.35, ease: 'easeInOut' }}
                     style={{ padding: '28px 24px', borderRadius: '16px',
                       background: `linear-gradient(135deg, ${t.color}12 0%, rgba(255,255,255,0.03) 100%)`,
