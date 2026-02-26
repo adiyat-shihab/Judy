@@ -108,12 +108,18 @@ const TESTIMONIALS = [
   { name: 'Lena Müller',      role: 'CTO at StartupHub',              color: '#06b6d4', quote: '"Role-segregated dashboards mean our Buyers, Solvers, and Admins all see exactly what they need — nothing more, nothing less. Security done right."', stars: 5 },
 ];
 
+const CTA_BENEFITS = [
+  'No setup fees, free to join',
+  'JWT-secured from day one',
+  'Animated workflow lifecycle',
+];
+
 /* ─────────── component ─────────── */
 export default function Home() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [slide, setSlide] = useState(0);
-  const [dir, setDir]     = useState(1);
+  const [dir, setDir]     = useState<1 | -1>(1);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -446,6 +452,188 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════ CTA ══════════════ */}
+      <section style={{ position: 'relative', padding: '120px 24px', background: 'var(--bg-secondary)', overflow: 'hidden' }}>
+        {/* subtle bg glow */}
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+          width: '600px', height: '400px',
+          background: 'radial-gradient(ellipse, rgba(124,58,237,0.15) 0%, transparent 70%)',
+          filter: 'blur(40px)', zIndex: 0 }} />
+
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
+
+          {/* badge */}
+          <motion.div initial={{ opacity: 0, y: -10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '5px 14px',
+              borderRadius: '999px', fontSize: '0.78rem', fontWeight: '600',
+              background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)',
+              color: '#a855f7', marginBottom: '28px' }}>
+            <Code2 size={13} /> Ready to Build?
+          </motion.div>
+
+          {/* heading */}
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ delay: 0.08 }}
+            style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: '800', marginBottom: '18px', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Start Building with{' '}
+            <span style={{ background: 'linear-gradient(135deg,#a855f7,#3b82f6,#06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Judy Today
+            </span>
+          </motion.h2>
+
+          {/* subtext */}
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
+            style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '480px', margin: '0 auto 12px', lineHeight: 1.75 }}>
+            Join the marketplace where buyers, solvers, and admins collaborate with a clear, secure, and animated workflow.
+          </motion.p>
+
+          {/* benefits */}
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+            style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '14px 28px', marginBottom: '44px', marginTop: '20px' }}>
+            {CTA_BENEFITS.map((b) => (
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <CheckCircle2 size={15} color="#10b981" />
+                {b}
+              </div>
+            ))}
+          </motion.div>
+
+          {/* buttons */}
+          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 }}
+            style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <motion.a href="/register"
+              whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(124,58,237,0.5)' }}
+              whileTap={{ scale: 0.97 }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '9px', padding: '14px 34px',
+                borderRadius: '10px', fontWeight: '700', fontSize: '1rem', textDecoration: 'none',
+                background: 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white',
+                boxShadow: '0 4px 24px rgba(124,58,237,0.4)' }}>
+              Get Started Free <ArrowRight size={17} />
+            </motion.a>
+            <motion.a href="/login"
+              whileHover={{ background: 'rgba(124,58,237,0.08)', scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 30px',
+                borderRadius: '10px', fontWeight: '600', fontSize: '1rem', textDecoration: 'none',
+                border: '1px solid rgba(124,58,237,0.35)', color: 'var(--text-primary)', background: 'transparent' }}>
+              View Dashboard
+            </motion.a>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════════ FOOTER ══════════════ */}
+      <footer style={{ background: 'var(--bg-primary)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '60px 24px 32px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+          {/* top grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '48px', marginBottom: '56px' }}>
+
+            {/* brand */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                {/* logo icon */}
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px',
+                  background: 'linear-gradient(135deg,#7c3aed,#3b82f6)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 16px rgba(124,58,237,0.4)' }}>
+                  <Zap size={18} color="white" />
+                </div>
+                <span style={{ fontWeight: '800', fontSize: '1.15rem' }}>Judy</span>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.75, maxWidth: '240px' }}>
+                A role-based project marketplace for Buyers, Solvers, and Admins — with a strict, animated workflow lifecycle.
+              </p>
+              {/* social icons */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                {[Twitter, Github, Linkedin, Mail].map((Icon, idx) => (
+                  <motion.a key={idx} href="#"
+                    whileHover={{ scale: 1.15, color: '#a855f7' }}
+                    style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)', textDecoration: 'none', transition: 'color 0.2s' }}>
+                    <Icon size={16} />
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+
+            {/* quick links */}
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '0.9rem', marginBottom: '18px', color: 'var(--text-primary)' }}>Quick Links</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {['Register', 'Login', 'Dashboard', 'Documentation'].map((link) => (
+                  <motion.a key={link} href="#"
+                    whileHover={{ x: 4, color: '#a855f7' }}
+                    style={{ color: 'var(--text-muted)', fontSize: '0.88rem', textDecoration: 'none', transition: 'color 0.2s' }}>
+                    {link}
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+
+            {/* roles */}
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '0.9rem', marginBottom: '18px', color: 'var(--text-primary)' }}>Roles</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {['Buyer Dashboard', 'Solver Dashboard', 'Admin Panel', 'Project Lifecycle'].map((link) => (
+                  <motion.a key={link} href="#"
+                    whileHover={{ x: 4, color: '#a855f7' }}
+                    style={{ color: 'var(--text-muted)', fontSize: '0.88rem', textDecoration: 'none', transition: 'color 0.2s' }}>
+                    {link}
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+
+            {/* stay updated */}
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '0.9rem', marginBottom: '18px', color: 'var(--text-primary)' }}>Stay Updated</div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.65, marginBottom: '16px' }}>
+                Get the latest updates and platform news straight to your inbox.
+              </p>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', fontSize: '0.85rem',
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)', outline: 'none', minWidth: 0 }}
+                />
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: '0 4px 20px rgba(124,58,237,0.5)' }}
+                  whileTap={{ scale: 0.96 }}
+                  style={{ padding: '10px 16px', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem',
+                    background: 'linear-gradient(135deg,#7c3aed,#3b82f6)', color: 'white', border: 'none',
+                    cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  Subscribe
+                </motion.button>
+              </div>
+            </div>
+          </div>
+
+          {/* bottom bar */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '28px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+              © 2026 Judy. All rights reserved.
+            </div>
+            <div style={{ display: 'flex', gap: '24px' }}>
+              {['Privacy', 'Terms', 'Cookies'].map((link) => (
+                <motion.a key={link} href="#"
+                  whileHover={{ color: '#a855f7' }}
+                  style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textDecoration: 'none', transition: 'color 0.2s' }}>
+                  {link}
+                </motion.a>
+              ))}
+            </div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+              Made with ♥ for builders
+            </div>
+          </div>
+        </div>
+      </footer>
 
     </div>
   );
